@@ -27,6 +27,9 @@ export default function SideBar() {
               Github
             </Link>
           </SideBarItem>
+          <SideBarItem>
+            <Link href="https://t.me/davidfurlong">Contact</Link>
+          </SideBarItem>
         </View>
       </SafeAreaView>
     </View>

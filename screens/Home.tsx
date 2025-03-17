@@ -19,7 +19,6 @@ export default function Home() {
   const [text, setText] = useState("");
   const { switchChainAsync } = useSwitchChain();
   const { mutate: postComment, isPending, error } = usePostComment();
-  // AccountController.state
 
   if (error) {
     throw error;
@@ -47,13 +46,9 @@ export default function Home() {
                 return;
               }
 
-              console.log("switching chain...");
-
               await switchChainAsync({
                 chainId,
               });
-
-              console.log("posting comments...");
 
               await postComment({
                 content: text,
