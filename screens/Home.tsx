@@ -17,6 +17,7 @@ const chainId = chain.id;
 
 export default function Home() {
   const { address } = useAccount();
+  const [textAreaDisabled, setTextAreaDisabled] = useState(false);
   const [text, setText] = useState("");
   const { switchChainAsync } = useSwitchChain();
   const { mutateAsync: postComment, isPending, error } = usePostComment();
@@ -37,6 +38,7 @@ export default function Home() {
       <Container>
         <StatusBar />
         <TextArea
+          editable={!textAreaDisabled}
           value={text}
           placeholder="Write a comment here..."
           onChangeText={setText}
@@ -50,30 +52,35 @@ export default function Home() {
                 return;
               }
 
-              await switchChainAsync({
-                chainId,
-              });
+              setTextAreaDisabled(true);
 
-              setText("");
-
-              const { txHash, commentData, appSignature, commentId } =
-                await postComment({
-                  content: text,
-                  // in react native app we will have to specify a targetUri that is owned by us
-                  targetUri: publicEnv.EXPO_PUBLIC_TARGET_URI,
-                  author: address,
+              try {
+                await switchChainAsync({
                   chainId,
                 });
 
-              insertPendingCommentOperation({
-                chainId,
-                txHash: txHash,
-                response: {
-                  data: commentData,
-                  signature: appSignature,
-                  hash: commentId,
-                },
-              });
+                const { txHash, commentData, appSignature, commentId } =
+                  await postComment({
+                    content: text,
+                    // in react native app we will have to specify a targetUri that is owned by us
+                    targetUri: publicEnv.EXPO_PUBLIC_TARGET_URI,
+                    author: address,
+                    chainId,
+                  });
+                setText("");
+
+                insertPendingCommentOperation({
+                  chainId,
+                  txHash: txHash,
+                  response: {
+                    data: commentData,
+                    signature: appSignature,
+                    hash: commentId,
+                  },
+                });
+              } finally {
+                setTextAreaDisabled(false);
+              }
             }}
           >
             Post comment

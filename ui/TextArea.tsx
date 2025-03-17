@@ -3,11 +3,13 @@ import { TextInput, TextInputProps } from "react-native";
 export default function TextArea({
   error,
   style,
+  editable,
   ...props
 }: TextInputProps & { error?: string | boolean }) {
   return (
     <TextInput
       {...props}
+      editable={editable}
       style={[
         {
           borderWidth: 1,
@@ -16,6 +18,7 @@ export default function TextArea({
           paddingVertical: 5,
           minHeight: 80,
           borderColor: !!error ? "red" : "#000000",
+          color: editable ? "#000" : "#808080",
         },
         style,
       ]}
