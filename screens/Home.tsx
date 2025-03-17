@@ -1,4 +1,5 @@
 import React from "react";
+import { View } from "react-native";
 import { useAccount, useSwitchChain } from "wagmi";
 import Container from "../ui/Container";
 import TextArea from "../ui/TextArea";
@@ -10,7 +11,7 @@ import { usePostComment } from "../hooks/usePostComment";
 import { chain } from "../wagmi.config";
 import CommentSection from "../components/CommentSection";
 import StatusBar from "../components/StatusBar";
-import { View } from "react-native";
+import { useOptimisticCommentingManager } from "../hooks/useOptimisticCommentingManager";
 
 const chainId = chain.id;
 
@@ -18,7 +19,10 @@ export default function Home() {
   const { address } = useAccount();
   const [text, setText] = useState("");
   const { switchChainAsync } = useSwitchChain();
-  const { mutate: postComment, isPending, error } = usePostComment();
+  const { mutateAsync: postComment, isPending, error } = usePostComment();
+  const { insertPendingCommentOperation } = useOptimisticCommentingManager([
+    "comments",
+  ]);
 
   if (error) {
     throw error;
@@ -50,12 +54,25 @@ export default function Home() {
                 chainId,
               });
 
-              await postComment({
-                content: text,
-                // in react native app we will have to specify a targetUri that is owned by us
-                targetUri: publicEnv.EXPO_PUBLIC_TARGET_URI,
-                author: address,
+              setText("");
+
+              const { txHash, commentData, appSignature, commentId } =
+                await postComment({
+                  content: text,
+                  // in react native app we will have to specify a targetUri that is owned by us
+                  targetUri: publicEnv.EXPO_PUBLIC_TARGET_URI,
+                  author: address,
+                  chainId,
+                });
+
+              insertPendingCommentOperation({
                 chainId,
+                txHash: txHash,
+                response: {
+                  data: commentData,
+                  signature: appSignature,
+                  hash: commentId,
+                },
               });
             }}
           >

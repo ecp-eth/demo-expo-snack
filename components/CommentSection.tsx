@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { View, Text, ActivityIndicator, ScrollView } from "react-native";
 import { publicEnv } from "../env";
 import { Comment } from "./Comment";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default () => {
   const { data: comments, isLoading } = useQuery({
@@ -13,6 +14,7 @@ export default () => {
         targetUri: publicEnv.EXPO_PUBLIC_TARGET_URI,
       });
     },
+    enabled: true,
   });
 
   if (isLoading) {
@@ -52,10 +54,13 @@ const CommentSectionContainer = ({
 }: {
   children: React.ReactNode;
 }) => {
+  const insets = useSafeAreaInsets();
+
   return (
     <View
       style={{
         paddingHorizontal: 30,
+        paddingBottom: insets.bottom,
       }}
     >
       {children}
