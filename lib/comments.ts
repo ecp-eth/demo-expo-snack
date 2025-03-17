@@ -1,3 +1,4 @@
+import { waitForTransactionReceipt } from "@wagmi/core";
 import { bigintReplacer } from "./utils";
 import { fetchAPI } from "./fetch";
 import {
@@ -5,7 +6,6 @@ import {
   SignCommentResponseSchema,
 } from "./schemas";
 import { postCommentAsAuthorViaCommentsV1 } from "./contracts";
-import { waitForTransactionReceipt } from "@wagmi/core";
 import { chain, config } from "../wagmi.config";
 
 const chainId = chain.id;
@@ -32,14 +32,10 @@ export const postComment = async (
     appSignature,
   });
 
-  console.log("transaction sent", txHash);
-
   const receipt = await waitForTransactionReceipt(config, {
     hash: txHash,
     chainId,
   });
-
-  console.log("transaction confirmed", receipt);
 
   return receipt;
 };

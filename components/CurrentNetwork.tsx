@@ -7,9 +7,9 @@ export default function CurrentNetwork() {
   return (
     <View>
       {chain.name === "Base" ? (
-        <Base fill="#fff" width={20} height={20} />
+        <Base fill="#fff" width={24} height={24} />
       ) : (
-        <Anvil width={20} height={20} />
+        <Anvil width={24} height={24} />
       )}
     </View>
   );

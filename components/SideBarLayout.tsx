@@ -1,10 +1,11 @@
-import { Pressable, SafeAreaView, ScrollView, View } from "react-native";
+import { Pressable, View } from "react-native";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import SideBar from "./SideBar";
 import { PropsWithChildren, useMemo } from "react";
 import Header from "./Header";
@@ -15,6 +16,7 @@ const SIDE_BAR_PERCENTAGE = 40;
 const SIDE_BAR_ANIMATION_DURATION = 100;
 
 export default function SideBarLayout({ children }: PropsWithChildren) {
+  const insets = useSafeAreaInsets();
   const sideBarWidth = useMemo(() => vw(SIDE_BAR_PERCENTAGE), []);
   const { animatedStyle, toggleSideBar, gesture } =
     useSideBarAnimatedStyle(sideBarWidth);
@@ -34,9 +36,6 @@ export default function SideBarLayout({ children }: PropsWithChildren) {
         <View
           style={{
             width: sideBarWidth,
-            // boxShadow: "1px 0px 1px 2px rgba(0, 0, 0, 0.1)",
-            // zIndex: 1,
-            // position: "relative",
           }}
         >
           <SideBar />
@@ -49,12 +48,30 @@ export default function SideBarLayout({ children }: PropsWithChildren) {
           }}
         >
           <BurgerFloater onPress={toggleSideBar} />
-          <SafeAreaView>
+          <View
+            style={{
+              flexGrow: 1,
+              flexShrink: 0,
+              flexDirection: "column",
+              alignItems: "stretch",
+              justifyContent: "flex-start",
+
+              paddingTop: insets.top,
+              paddingLeft: insets.left,
+              paddingRight: insets.right,
+            }}
+          >
             <Header />
-            <ScrollView keyboardShouldPersistTaps="handled">
+            <View
+              style={{
+                flex: 1,
+                width: "100%",
+                maxHeight: "100%",
+              }}
+            >
               {children}
-            </ScrollView>
-          </SafeAreaView>
+            </View>
+          </View>
         </View>
       </Animated.View>
     </GestureDetector>
@@ -74,19 +91,18 @@ function Burger() {
 }
 
 function BurgerFloater({ onPress }: { onPress: () => void }) {
+  const insets = useSafeAreaInsets();
   return (
     <Pressable
       onPress={onPress}
       style={{
         position: "absolute",
-        top: 0,
+        top: insets.top,
         left: 0,
         zIndex: 1,
       }}
     >
-      <SafeAreaView>
-        <Burger />
-      </SafeAreaView>
+      <Burger />
     </Pressable>
   );
 }

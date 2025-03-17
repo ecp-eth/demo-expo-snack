@@ -1,14 +1,15 @@
 import { fetchComments } from "@ecp.eth/sdk/dist";
 import { useQuery } from "@tanstack/react-query";
-import { View, Text, ActivityIndicator } from "react-native";
+import { View, Text, ActivityIndicator, ScrollView } from "react-native";
 import { publicEnv } from "../env";
-import Container from "../ui/Container";
+import { Comment } from "./Comment";
 
 export default () => {
   const { data: comments, isLoading } = useQuery({
     queryKey: ["comments"],
     queryFn: () => {
       return fetchComments({
+        apiUrl: publicEnv.EXPO_PUBLIC_INDEXER_URL,
         targetUri: publicEnv.EXPO_PUBLIC_TARGET_URI,
       });
     },
@@ -31,16 +32,18 @@ export default () => {
   }
 
   return (
-    <CommentSectionContainer>
-      {comments.results.map((comment) => {
-        return (
-          <View>
-            <Text>{comment.author.address}</Text>
-            <Text>{comment.content}</Text>
-          </View>
-        );
-      })}
-    </CommentSectionContainer>
+    <ScrollView
+      keyboardShouldPersistTaps="handled"
+      style={{
+        flex: 1,
+      }}
+    >
+      <CommentSectionContainer>
+        {comments.results.map((comment) => {
+          return <Comment key={comment.id} comment={comment} />;
+        })}
+      </CommentSectionContainer>
+    </ScrollView>
   );
 };
 
@@ -49,5 +52,13 @@ const CommentSectionContainer = ({
 }: {
   children: React.ReactNode;
 }) => {
-  return <View>{children}</View>;
+  return (
+    <View
+      style={{
+        paddingHorizontal: 30,
+      }}
+    >
+      {children}
+    </View>
+  );
 };

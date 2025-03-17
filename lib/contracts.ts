@@ -4,7 +4,7 @@ import {
   createCommentSuffixData,
 } from "@ecp.eth/sdk/dist/index";
 import { CommentData } from "@ecp.eth/sdk/dist/schemas";
-import { getContract, Hex, parseAbi, WalletClient } from "viem";
+import { Hex, parseAbi } from "viem";
 import { publicEnv } from "../env";
 import { writeContract } from "@wagmi/core";
 import { config } from "../wagmi.config";

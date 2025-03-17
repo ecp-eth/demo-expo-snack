@@ -6,6 +6,7 @@ import { createAppKit, AppKit } from "@reown/appkit-wagmi-react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { projectId, config as wagmiConfig } from "./wagmi.config";
 import ErrorBoundary from "./ErrorBoundary";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 const queryClient = new QueryClient();
 
@@ -19,12 +20,14 @@ createAppKit({
 export default function Providers({ children }: PropsWithChildren) {
   return (
     <ErrorBoundary>
-      <WagmiProvider config={wagmiConfig}>
-        <QueryClientProvider client={queryClient}>
-          <GestureHandlerRootView>{children}</GestureHandlerRootView>
-          <AppKit />
-        </QueryClientProvider>
-      </WagmiProvider>
+      <SafeAreaProvider>
+        <WagmiProvider config={wagmiConfig}>
+          <QueryClientProvider client={queryClient}>
+            <GestureHandlerRootView>{children}</GestureHandlerRootView>
+            <AppKit />
+          </QueryClientProvider>
+        </WagmiProvider>
+      </SafeAreaProvider>
     </ErrorBoundary>
   );
 }
