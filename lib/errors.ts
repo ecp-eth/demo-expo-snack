@@ -7,11 +7,14 @@ export class NetworkError extends Error {
 }
 
 export class ResponseError extends Error {
-  constructor(
-    readonly debugMessage: string,
-    readonly response: Response
-  ) {
+  constructor(readonly debugMessage: string, readonly response: Response) {
     super(`status: ${response.status}\n${debugMessage}`);
+  }
+}
+
+export class RateLimitError extends Error {
+  constructor() {
+    super(`Rate limit exceeded`);
   }
 }
 

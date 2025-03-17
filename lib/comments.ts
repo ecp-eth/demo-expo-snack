@@ -1,30 +1,45 @@
 import { bigintReplacer } from "./utils";
 import { fetchAPI } from "./fetch";
-import { SignCommentRequestBodySchemaType, abc } from "./schemas";
-import { throwResponseError, throwResponseSchemaError } from "./errors";
+import {
+  SignCommentRequestBodySchemaType,
+  SignCommentResponseSchema,
+} from "./schemas";
+import { postCommentAsAuthorViaCommentsV1 } from "./contracts";
+import { waitForTransactionReceipt } from "@wagmi/core";
+import { chain, config } from "../wagmi.config";
+
+const chainId = chain.id;
 
 export const postComment = async (
   comment: SignCommentRequestBodySchemaType
 ) => {
-  const signingResponse = await fetchAPI("/api/sign-comment", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
+  const signed = await fetchAPI(
+    "/api/sign-comment",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(comment, bigintReplacer),
     },
-    body: JSON.stringify(comment, bigintReplacer),
+    SignCommentResponseSchema
+  );
+
+  const { data: commentData, signature: appSignature } = signed;
+
+  const txHash = await postCommentAsAuthorViaCommentsV1({
+    commentData,
+    appSignature,
   });
 
-  if (!signingResponse.ok) {
-    await throwResponseError(signingResponse);
-  }
+  console.log("transaction sent", txHash);
 
-  const parsed = abc.safeParse(await signingResponse.json());
+  const receipt = await waitForTransactionReceipt(config, {
+    hash: txHash,
+    chainId,
+  });
 
-  // if (!parsed.success) {
-  //   throwResponseSchemaError(parsed.error);
-  // }
+  console.log("transaction confirmed", receipt);
 
-  // const { signature } = parsed.data;
-
-  // console.log(signature);
+  return receipt;
 };

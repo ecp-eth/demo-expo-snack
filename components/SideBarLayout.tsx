@@ -51,7 +51,9 @@ export default function SideBarLayout({ children }: PropsWithChildren) {
           <BurgerFloater onPress={toggleSideBar} />
           <SafeAreaView>
             <Header />
-            <ScrollView>{children}</ScrollView>
+            <ScrollView keyboardShouldPersistTaps="handled">
+              {children}
+            </ScrollView>
           </SafeAreaView>
         </View>
       </Animated.View>
