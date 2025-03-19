@@ -4,13 +4,13 @@ import {
   Hex,
   IndexerAPIListCommentsSchema,
   IndexerAPIListCommentsSchemaType,
-} from "@ecp.eth/sdk/dist/schemas";
+} from "@ecp.eth/sdk/schemas";
 import { useMonitorListCommentsCache } from "./useMonitorListCommentsCache";
 import { everyIndexerAPIListComments } from "./helpers";
 import {
   IndexerAPICommentWithPendingOperationSchemaType,
   PendingOperationSchema,
-} from "../../lib/schemas";
+} from "./schemas";
 
 const DELETED_COMMENT_CONTENT = "[deleted]";
 

@@ -1,4 +1,4 @@
-import { fetchComments } from "@ecp.eth/sdk/dist";
+import { fetchComments } from "@ecp.eth/sdk";
 import { useQuery } from "@tanstack/react-query";
 import { View, Text, ActivityIndicator, ScrollView } from "react-native";
 import { publicEnv } from "../env";

@@ -23,9 +23,8 @@ cp "${SOURCE_REPO_PATH}/apps/demo/src/lib/schemas.ts" ${TARGET_PATHNAME}
 rm $TARGET_PATHNAME
 mv temp $TARGET_PATHNAME
 
-sed 's/@ecp\.eth\/sdk\/schemas/@ecp.eth\/sdk\/dist\/schemas/g' $TARGET_PATHNAME > temp
-rm $TARGET_PATHNAME
-mv temp $TARGET_PATHNAME
-
+# sed 's/@ecp\.eth\/sdk\/schemas/@ecp.eth\/sdk\/dist\/schemas/g' $TARGET_PATHNAME > temp
+# rm $TARGET_PATHNAME
+# mv temp $TARGET_PATHNAME
 
 echo "Synced API schemas"

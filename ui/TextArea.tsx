@@ -17,7 +17,7 @@ export default function TextArea({
           paddingHorizontal: 10,
           paddingVertical: 5,
           minHeight: 80,
-          borderColor: !!error ? "red" : "#000000",
+          borderColor: error ? "red" : "#000000",
           color: editable ? "#000" : "#808080",
         },
         style,

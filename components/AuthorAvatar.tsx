@@ -1,8 +1,8 @@
+import { View, Image } from "react-native";
 import { blo } from "blo";
 import useEnrichedAuthor from "../hooks/useEnrichedAuthor";
 import { AuthorType } from "../lib/types";
 import { getCommentAuthorNameOrAddress } from "../lib/utils";
-import { View, Image, Text } from "react-native";
 
 const AVATAR_SIZE = 24;
 

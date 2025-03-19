@@ -7,7 +7,7 @@ import { useEffect } from "react";
 import {
   IndexerAPIListCommentsWithPendingOperationsSchema,
   IndexerAPIListCommentsWithPendingOperationsSchemaType,
-} from "../../lib/schemas";
+} from "./schemas";
 
 export function useMonitorListCommentsCache(
   client: QueryClient,

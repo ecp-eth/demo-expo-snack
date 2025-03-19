@@ -2,8 +2,8 @@ import {
   COMMENTS_V1_ADDRESS,
   CommentsV1Abi,
   createCommentSuffixData,
-} from "@ecp.eth/sdk/dist/index";
-import { CommentData } from "@ecp.eth/sdk/dist/schemas";
+} from "@ecp.eth/sdk";
+import { CommentData } from "@ecp.eth/sdk/schemas";
 import { Hex, parseAbi } from "viem";
 import { publicEnv } from "../env";
 import { writeContract } from "@wagmi/core";

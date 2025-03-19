@@ -2,10 +2,10 @@ import { waitForTransactionReceipt } from "@wagmi/core";
 import { bigintReplacer } from "./utils";
 import { fetchAPI } from "./fetch";
 import { Hex, TransactionReceipt } from "viem";
-import { CommentData } from "@ecp.eth/sdk/dist/schemas";
+import { CommentData } from "@ecp.eth/sdk/schemas";
 import {
-  SignCommentRequestBodySchemaType,
-  SignCommentResponseSchema,
+  SignCommentPayloadRequestSchemaType,
+  SignCommentResponseClientSchema,
 } from "./schemas";
 import { postCommentAsAuthorViaCommentsV1 } from "./contracts";
 import { chain, config } from "../wagmi.config";
@@ -21,7 +21,7 @@ type PostCommentResponse = {
 };
 
 export const postComment = async (
-  comment: SignCommentRequestBodySchemaType
+  comment: SignCommentPayloadRequestSchemaType
 ): Promise<PostCommentResponse> => {
   const signed = await fetchAPI(
     "/api/sign-comment",
@@ -32,7 +32,7 @@ export const postComment = async (
       },
       body: JSON.stringify(comment, bigintReplacer),
     },
-    SignCommentResponseSchema
+    SignCommentResponseClientSchema
   );
 
   const {

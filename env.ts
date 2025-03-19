@@ -1,4 +1,4 @@
-import { Hex, HexSchema } from "@ecp.eth/sdk/dist/schemas";
+import { Hex, HexSchema } from "@ecp.eth/sdk/schemas";
 import { z } from "zod";
 
 export const publicEnvSchema = z.object({

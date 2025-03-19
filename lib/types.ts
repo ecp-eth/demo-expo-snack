@@ -1,7 +1,7 @@
 import {
   IndexerAPICommentSchemaType,
   IndexerAPICommentWithRepliesSchemaType,
-} from "@ecp.eth/sdk/dist/schemas";
+} from "@ecp.eth/sdk/schemas";
 
 type CommentType =
   | IndexerAPICommentSchemaType

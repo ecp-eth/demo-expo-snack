@@ -1,18 +1,18 @@
-import { isZeroHex } from "@ecp.eth/sdk/dist/";
-import { QueryClient, type QueryKey } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
+import { QueryClient, type QueryKey } from "@tanstack/react-query";
+import { isZeroHex } from "@ecp.eth/sdk/";
 import {
   Hex,
   IndexerAPIListCommentsSchemaType,
   IndexerAPICommentWithRepliesSchemaType,
   IndexerAPIListCommentRepliesSchemaType,
   IndexerAPIListCommentsSchema,
-} from "@ecp.eth/sdk/dist/schemas";
+} from "@ecp.eth/sdk/schemas";
 import {
   PendingCommentOperationSchemaType,
   PendingOperationSchema,
   PendingOperationSchemaType,
-} from "../../lib/schemas";
+} from "./schemas";
 import { useMonitorListCommentsCache } from "./useMonitorListCommentsCache";
 import {
   everyIndexerAPIListComments,
@@ -228,12 +228,13 @@ function createIndexerAPICommentDataFromPendingCommentOperation(
       address: pendingCommentOperation.response.data.author,
     },
     deletedAt: null,
+    cursor: pendingCommentOperation.response.hash,
     replies: {
       results: [],
       pagination: {
         limit: 0,
-        offset: 0,
-        hasMore: false,
+        hasNext: false,
+        hasPrevious: false,
       },
     },
     pendingType,
