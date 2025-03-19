@@ -15,6 +15,7 @@
     "@ecp.eth/sdk": "0.0.13",
     "@ecp.eth/shared": "^0.0.5",
     "@expo/vector-icons": "^14.0.4",
+    "@pdf-lib/upng": "^1.0.1",
     "@react-native-async-storage/async-storage": "^1.24.0",
     "@react-native-community/netinfo": "^11.4.1",
     "@reown/appkit-wagmi-react-native": "^1.2.2",

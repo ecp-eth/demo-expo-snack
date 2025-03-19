@@ -1,9 +1,9 @@
 import React from "react";
 import { View, Image } from "react-native";
-import { blo } from "blo";
 import useEnrichedAuthor from "../hooks/useEnrichedAuthor";
 import { AuthorType } from "../lib/types";
 import { getCommentAuthorNameOrAddress } from "../lib/utils";
+import identicon from "../lib/identicon";
 
 const AVATAR_SIZE = 24;
 
@@ -17,7 +17,7 @@ export function AuthorAvatar({ author }: AuthorAvatarProps) {
   const avatarUrl =
     enrichedAuthor.ens?.avatarUrl ??
     enrichedAuthor.farcaster?.pfpUrl ??
-    blo(author.address);
+    identicon(author.address, AVATAR_SIZE);
 
   return (
     <View
@@ -26,6 +26,7 @@ export function AuthorAvatar({ author }: AuthorAvatarProps) {
         height: AVATAR_SIZE,
         borderRadius: AVATAR_SIZE / 2,
         overflow: "hidden",
+        backgroundColor: "#EFEFEF",
       }}
     >
       <Image
