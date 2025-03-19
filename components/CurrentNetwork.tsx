@@ -1,3 +1,4 @@
+import React from "react";
 import { View } from "react-native";
 import { chain } from "../wagmi.config";
 import Base from "./icons/chains/Base";

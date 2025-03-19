@@ -1,3 +1,4 @@
+import React from "react";
 import { Pressable, View } from "react-native";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import Animated, {

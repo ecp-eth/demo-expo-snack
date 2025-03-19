@@ -1,7 +1,7 @@
+import React from "react";
 import { SafeAreaView, View } from "react-native";
 import Link from "../ui/Link";
 import SideBarItem from "./SideBarItem";
-import { AccountButton } from "@reown/appkit-wagmi-react-native";
 
 export default function SideBar() {
   return (

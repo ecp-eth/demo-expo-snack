@@ -1,3 +1,4 @@
+import React from "react";
 import { View } from "react-native";
 import Providers from "./Providers";
 import SideBarLayout from "./components/SideBarLayout";

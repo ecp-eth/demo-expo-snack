@@ -73,7 +73,7 @@ export default function Home() {
                   chainId,
                   txHash: txHash,
                   response: {
-                    data: commentData,
+                    data: { ...commentData, id: commentId },
                     signature: appSignature,
                     hash: commentId,
                   },

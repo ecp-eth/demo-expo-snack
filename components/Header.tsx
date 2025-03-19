@@ -1,5 +1,5 @@
+import React from "react";
 import { View, Text } from "react-native";
-import Link from "../ui/Link";
 
 export default function Header() {
   return (

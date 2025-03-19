@@ -1,3 +1,4 @@
+import React from "react";
 import { View, Image } from "react-native";
 import { blo } from "blo";
 import useEnrichedAuthor from "../hooks/useEnrichedAuthor";

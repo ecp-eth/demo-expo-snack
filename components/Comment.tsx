@@ -1,5 +1,5 @@
-import { IndexerAPICommentSchemaType } from "@ecp.eth/sdk/schemas";
 import React from "react";
+import { IndexerAPICommentSchemaType } from "@ecp.eth/sdk/schemas";
 import { View, Text } from "react-native";
 import useEnrichedAuthor from "../hooks/useEnrichedAuthor";
 import { AuthorBox } from "./AuthorBox";

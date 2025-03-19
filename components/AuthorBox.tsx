@@ -1,3 +1,4 @@
+import React from "react";
 import { AuthorType } from "../lib/types";
 import { getCommentAuthorNameOrAddress } from "../lib/utils";
 import { View, Text } from "react-native";

@@ -1,3 +1,4 @@
+import React from "react";
 import { Pressable, View, Text } from "react-native";
 import { useAccount } from "wagmi";
 import { useAppKit } from "@reown/appkit-wagmi-react-native";
