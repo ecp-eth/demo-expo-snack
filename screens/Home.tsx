@@ -1,6 +1,5 @@
-import React, { useEffect } from "react";
+import React, { useCallback } from "react";
 import { View } from "react-native";
-import Toast from "react-native-toast-message";
 import { useAccount, useSwitchChain } from "wagmi";
 import { ConnectButton } from "@reown/appkit-wagmi-react-native";
 import Container from "../ui/Container";
@@ -13,12 +12,8 @@ import { chain } from "../wagmi.config";
 import CommentSection from "../components/CommentSection";
 import StatusBar from "../components/StatusBar";
 import { useOptimisticCommentingManager } from "../hooks/useOptimisticCommentingManager";
-import {
-  NetworkError,
-  RateLimitError,
-  ResponseError,
-  ResponseSchemaError,
-} from "../lib/errors";
+import useShowErrorInToast from "../hooks/useShowErrorInToast";
+import useAppForegroundedEffect from "../hooks/useAppForegroundedEffect";
 
 const chainId = chain.id;
 
@@ -31,22 +26,24 @@ export default function Home() {
     mutateAsync: postComment,
     isPending: isPostingComment,
     error,
+    reset,
   } = usePostComment();
   const { insertPendingCommentOperation } = useOptimisticCommentingManager([
     "comments",
   ]);
   const disabledSubmit = !text || isPostingComment;
 
-  useEffect(() => {
-    if (error == null) {
-      return;
-    }
+  useShowErrorInToast(error);
 
-    Toast.show({
-      type: "error",
-      text1: getErrorMessage(error),
-    });
-  }, [error]);
+  useAppForegroundedEffect(
+    useCallback(() => {
+      if (isPostingComment || !error) {
+        // user might have connnectivity issue with the wallet
+        // so we reset the error and the posting state
+        reset();
+      }
+    }, [])
+  );
 
   return (
     <View
@@ -112,24 +109,4 @@ export default function Home() {
       <CommentSection />
     </View>
   );
-}
-
-function getErrorMessage(error: Error) {
-  if (error instanceof NetworkError) {
-    return "📡 There seems to be an issue with your network connection. Please try again later.";
-  }
-
-  if (error instanceof ResponseError) {
-    return "🔧 Our servers are currently experiencing issues. Please try again later.";
-  }
-
-  if (error instanceof RateLimitError) {
-    return "⏳ We've noticed you're quite active! Please wait a moment before trying again.";
-  }
-
-  if (error instanceof ResponseSchemaError) {
-    return "🔧 There seems to be an issue with the data we received from the server. Please try upgrade the app or reach out to support.";
-  }
-
-  return "❌ " + error.message;
 }
