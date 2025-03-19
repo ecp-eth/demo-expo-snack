@@ -7,6 +7,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
+    "typecheck": "tsc --noEmit",
     "api:schema:sync": "scripts/syncAPISchemas.sh"
   },
   "dependencies": {
@@ -32,7 +33,6 @@
     "react-native": "0.76.7",
     "react-native-gesture-handler": "~2.20.2",
     "react-native-get-random-values": "^1.11.0",
-    "react-native-paper": "4.9.2",
     "react-native-reanimated": "~3.16.1",
     "react-native-safe-area-context": "^5.3.0",
     "react-native-svg": "^15.11.2",

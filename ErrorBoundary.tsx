@@ -1,5 +1,6 @@
 import React, { Component, ErrorInfo, ReactNode } from "react";
-import { SafeAreaView, Text, View } from "react-native";
+import { SafeAreaView, Text, View, DevSettings } from "react-native";
+import Button from "./ui/Button";
 
 interface Props {
   children: ReactNode;
@@ -33,11 +34,27 @@ class ErrorBoundary extends Component<Props, State> {
   render(): ReactNode {
     if (this.state.hasError) {
       return (
-        this.props.fallback || (
-          <SafeAreaView>
-            <View>
-              <Text>Something went wrong.</Text>
+        this.props.fallback ?? (
+          <SafeAreaView style={{ backgroundColor: "white", flex: 1 }}>
+            <View style={{ flex: 1, padding: 30, gap: 20 }}>
+              <Text
+                style={{
+                  color: "black",
+                  fontWeight: "bold",
+                  fontSize: 20,
+                }}
+              >
+                Something went wrong.
+              </Text>
               <Text>{this.state.error?.toString()}</Text>
+              <Text>You may want to reset the app and try again:</Text>
+              <Button
+                onPress={() => {
+                  DevSettings.reload();
+                }}
+              >
+                Reset
+              </Button>
             </View>
           </SafeAreaView>
         )
