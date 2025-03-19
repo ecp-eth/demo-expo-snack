@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View } from "react-native";
+import Toast from "react-native-toast-message";
 import { useAccount, useSwitchChain } from "wagmi";
+import { ConnectButton } from "@reown/appkit-wagmi-react-native";
 import Container from "../ui/Container";
 import TextArea from "../ui/TextArea";
-import { ConnectButton } from "@reown/appkit-wagmi-react-native";
 import Button from "../ui/Button";
 import { publicEnv } from "../env";
 import { useState } from "react";
@@ -12,6 +13,12 @@ import { chain } from "../wagmi.config";
 import CommentSection from "../components/CommentSection";
 import StatusBar from "../components/StatusBar";
 import { useOptimisticCommentingManager } from "../hooks/useOptimisticCommentingManager";
+import {
+  NetworkError,
+  RateLimitError,
+  ResponseError,
+  ResponseSchemaError,
+} from "../lib/errors";
 
 const chainId = chain.id;
 
@@ -20,14 +27,26 @@ export default function Home() {
   const [textAreaDisabled, setTextAreaDisabled] = useState(false);
   const [text, setText] = useState("");
   const { switchChainAsync } = useSwitchChain();
-  const { mutateAsync: postComment, isPending, error } = usePostComment();
+  const {
+    mutateAsync: postComment,
+    isPending: isPostingComment,
+    error,
+  } = usePostComment();
   const { insertPendingCommentOperation } = useOptimisticCommentingManager([
     "comments",
   ]);
+  const disabledSubmit = !text || isPostingComment;
 
-  if (error) {
-    throw error;
-  }
+  useEffect(() => {
+    if (error == null) {
+      return;
+    }
+
+    Toast.show({
+      type: "error",
+      text1: getErrorMessage(error),
+    });
+  }, [error]);
 
   return (
     <View
@@ -45,8 +64,8 @@ export default function Home() {
         />
         {address ? (
           <Button
-            disabled={!text}
-            loading={isPending}
+            disabled={disabledSubmit}
+            loading={isPostingComment}
             onPress={async () => {
               if (!text) {
                 return;
@@ -93,4 +112,24 @@ export default function Home() {
       <CommentSection />
     </View>
   );
+}
+
+function getErrorMessage(error: Error) {
+  if (error instanceof NetworkError) {
+    return "📡 There seems to be an issue with your network connection. Please try again later.";
+  }
+
+  if (error instanceof ResponseError) {
+    return "🔧 Our servers are currently experiencing issues. Please try again later.";
+  }
+
+  if (error instanceof RateLimitError) {
+    return "⏳ We've noticed you're quite active! Please wait a moment before trying again.";
+  }
+
+  if (error instanceof ResponseSchemaError) {
+    return "🔧 There seems to be an issue with the data we received from the server. Please try upgrade the app or reach out to support.";
+  }
+
+  return "❌ " + error.message;
 }
