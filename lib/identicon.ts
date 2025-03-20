@@ -1,6 +1,7 @@
 import upng from "@pdf-lib/upng";
 import { bloImage } from "blo";
 import { Hex } from "viem";
+import memoize from "memoize/distribution/index";
 
 /**
  * The blo generates svg base64 uri which is not supported by
@@ -8,7 +9,7 @@ import { Hex } from "viem";
  *
  * This function converts the svg to a png and returns a base64 uri.
  */
-export default (address: Hex, size: number) => {
+const generate = (address: Hex, size: number) => {
   const pngBuffer = upng.encode(
     [pixelateEnlarge(blogImageToRGBBitmap(address), size)],
     size,
@@ -17,6 +18,8 @@ export default (address: Hex, size: number) => {
   );
   return arrayBufferToBase64Uri(pngBuffer, "image/png");
 };
+
+const memoizedGenerate = memoize(generate);
 
 // https://stackoverflow.com/a/64090995
 // input: h as an angle in [0,360] and s,l in [0,1]
@@ -105,3 +108,5 @@ function pixelateEnlarge(buffer: Uint8Array, size: number) {
 
   return imageBuffer.buffer;
 }
+
+export default memoizedGenerate;

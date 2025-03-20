@@ -14,10 +14,11 @@ type AuthorAvatarProps = {
 export function AuthorAvatar({ author }: AuthorAvatarProps) {
   const enrichedAuthor = useEnrichedAuthor(author);
   const nameOrAddress = getCommentAuthorNameOrAddress(enrichedAuthor);
+  const fallbackAvatarUrl = identicon(author.address, AVATAR_SIZE);
   const avatarUrl =
     enrichedAuthor.ens?.avatarUrl ??
     enrichedAuthor.farcaster?.pfpUrl ??
-    identicon(author.address, AVATAR_SIZE);
+    fallbackAvatarUrl;
 
   return (
     <View
@@ -27,11 +28,35 @@ export function AuthorAvatar({ author }: AuthorAvatarProps) {
         borderRadius: AVATAR_SIZE / 2,
         overflow: "hidden",
         backgroundColor: "#EFEFEF",
+        position: "relative",
       }}
     >
       <Image
+        source={{ uri: fallbackAvatarUrl }}
+        style={{
+          width: AVATAR_SIZE,
+          height: AVATAR_SIZE,
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 1,
+        }}
+        resizeMode="cover"
+      />
+      <Image
         source={{ uri: avatarUrl }}
-        style={{ width: AVATAR_SIZE, height: AVATAR_SIZE }}
+        style={{
+          width: AVATAR_SIZE,
+          height: AVATAR_SIZE,
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 2,
+        }}
         resizeMode="cover"
         alt={nameOrAddress}
       />
