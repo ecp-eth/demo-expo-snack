@@ -1,22 +1,55 @@
 import React from "react";
 import { fetchComments } from "@ecp.eth/sdk";
-import { useQuery } from "@tanstack/react-query";
-import { View, Text, ActivityIndicator, ScrollView } from "react-native";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  FlatList,
+  Dimensions,
+} from "react-native";
 import { publicEnv } from "../env";
 import { Comment } from "./Comment";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Hex } from "viem";
 
 export default () => {
-  const { data: comments, isLoading } = useQuery({
-    queryKey: ["comments"],
-    queryFn: () => {
-      return fetchComments({
-        apiUrl: publicEnv.EXPO_PUBLIC_INDEXER_URL,
-        targetUri: publicEnv.EXPO_PUBLIC_TARGET_URI,
-      });
-    },
-    enabled: true,
-  });
+  const insets = useSafeAreaInsets();
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: ["comments"],
+      initialPageParam: {
+        cursor: undefined as Hex | undefined,
+        // assuming comment box minimal height is 120, we want to at least fetch enough
+        // to fill the screen
+        // cursor: pageParam,
+        limit: Math.ceil(Dimensions.get("window").height / 120),
+      },
+      queryFn: ({ pageParam, signal }) => {
+        return fetchComments({
+          apiUrl: publicEnv.EXPO_PUBLIC_INDEXER_URL,
+          targetUri: publicEnv.EXPO_PUBLIC_TARGET_URI,
+          appSigner: publicEnv.EXPO_PUBLIC_APP_SIGNER_ADDRESS,
+
+          limit: pageParam.limit,
+          cursor: pageParam.cursor,
+          signal,
+        });
+      },
+      getNextPageParam: (lastPage, pages) => {
+        if (!lastPage.pagination.hasNext) {
+          return;
+        }
+
+        return {
+          cursor: lastPage.pagination.endCursor,
+          limit: lastPage.pagination.limit,
+        };
+      },
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      enabled: true,
+    });
 
   if (isLoading) {
     return (
@@ -26,7 +59,9 @@ export default () => {
     );
   }
 
-  if (!comments?.results?.length) {
+  const allComments = data?.pages.flatMap((page) => page.results) ?? [];
+
+  if (!allComments.length) {
     return (
       <CommentSectionContainer>
         <Text>No comments yet</Text>
@@ -35,18 +70,24 @@ export default () => {
   }
 
   return (
-    <ScrollView
-      keyboardShouldPersistTaps="handled"
-      style={{
-        flex: 1,
+    <FlatList
+      data={allComments}
+      renderItem={({ item }) => <Comment comment={item} />}
+      keyExtractor={(item) => item.id}
+      onEndReached={() => {
+        if (hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
       }}
-    >
-      <CommentSectionContainer>
-        {comments.results.map((comment) => {
-          return <Comment key={comment.id} comment={comment} />;
-        })}
-      </CommentSectionContainer>
-    </ScrollView>
+      onEndReachedThreshold={0.5}
+      ListFooterComponent={() =>
+        isFetchingNextPage ? <ActivityIndicator /> : null
+      }
+      contentContainerStyle={{
+        paddingHorizontal: 30,
+        paddingBottom: insets.bottom,
+      }}
+    />
   );
 };
 

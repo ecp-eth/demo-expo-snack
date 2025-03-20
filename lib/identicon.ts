@@ -2,6 +2,12 @@ import upng from "@pdf-lib/upng";
 import { bloImage } from "blo";
 import { Hex } from "viem";
 
+/**
+ * The blo generates svg base64 uri which is not supported by
+ * react native image component.
+ *
+ * This function converts the svg to a png and returns a base64 uri.
+ */
 export default (address: Hex, size: number) => {
   const pngBuffer = upng.encode(
     [pixelateEnlarge(blogImageToRGBBitmap(address), size)],

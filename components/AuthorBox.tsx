@@ -1,9 +1,9 @@
 import React from "react";
-import { AuthorType } from "../lib/types";
 import { getCommentAuthorNameOrAddress } from "@ecp.eth/shared/helpers";
 import { View, Text } from "react-native";
 import { AuthorAvatar } from "./AuthorAvatar";
 import useEnrichedAuthor from "../hooks/useEnrichedAuthor";
+import { AuthorType } from "@ecp.eth/shared/types";
 
 type AuthorBoxProps = {
   author: AuthorType;

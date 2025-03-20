@@ -1,7 +1,7 @@
 import React, { PropsWithChildren, useMemo } from "react";
 import { TouchableOpacity, Linking } from "react-native";
-import { AuthorType } from "../lib/types";
 import { formatAuthorLink } from "../lib/utils";
+import { AuthorType } from "@ecp.eth/shared/types";
 
 export function AuthorLinker({
   children,

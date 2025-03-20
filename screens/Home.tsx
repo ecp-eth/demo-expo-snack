@@ -39,8 +39,8 @@ export default function Home() {
   useAppForegroundedEffect(
     useCallback(() => {
       if (isPostingComment || !error) {
-        // user might have connnectivity issue with the wallet
-        // so we reset the error and the posting state
+        // user returned without error and is still posting (could bew still signing)
+        // probably the wallet hangs we reset state to allow they to try again
         reset();
       }
     }, [])
