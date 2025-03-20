@@ -1,15 +1,20 @@
 import React from "react";
-import { IndexerAPICommentSchemaType } from "@ecp.eth/sdk/schemas";
+import {
+  IndexerAPICommentSchemaType,
+  IndexerAPICommentWithRepliesSchemaType,
+} from "@ecp.eth/sdk/schemas";
+import AntDesign from "@expo/vector-icons/AntDesign";
 import { View, Text } from "react-native";
 import useEnrichedAuthor from "../hooks/useEnrichedAuthor";
 import { AuthorBox } from "./AuthorBox";
 import { AuthorLinker } from "./AuthorLinker";
 import TimeBox from "./TimeBox";
+import CommentBottomBar from "./CommentBottomBar";
 
 export const Comment = ({
   comment,
 }: {
-  comment: IndexerAPICommentSchemaType;
+  comment: IndexerAPICommentSchemaType | IndexerAPICommentWithRepliesSchemaType;
 }) => {
   const author = useEnrichedAuthor(comment.author);
   return (
@@ -37,6 +42,7 @@ export const Comment = ({
         <TimeBox timestamp={comment.timestamp} />
       </View>
       <Text>{comment.content}</Text>
+      <CommentBottomBar comment={comment} />
     </View>
   );
 };
