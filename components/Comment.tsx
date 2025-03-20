@@ -4,6 +4,7 @@ import { View, Text } from "react-native";
 import useEnrichedAuthor from "../hooks/useEnrichedAuthor";
 import { AuthorBox } from "./AuthorBox";
 import { AuthorLinker } from "./AuthorLinker";
+import TimeBox from "./TimeBox";
 
 export const Comment = ({
   comment,
@@ -21,10 +22,19 @@ export const Comment = ({
         gap: 15,
       }}
     >
-      <View>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: 10,
+        }}
+      >
         <AuthorLinker author={author}>
           <AuthorBox author={author} />
         </AuthorLinker>
+
+        <TimeBox timestamp={comment.timestamp} />
       </View>
       <Text>{comment.content}</Text>
     </View>

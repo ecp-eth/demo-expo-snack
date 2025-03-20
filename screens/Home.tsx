@@ -14,6 +14,7 @@ import StatusBar from "../components/StatusBar";
 import { useOptimisticCommentingManager } from "../hooks/useOptimisticCommentingManager";
 import useShowErrorInToast from "../hooks/useShowErrorInToast";
 import useAppForegroundedEffect from "../hooks/useAppForegroundedEffect";
+import { vh } from "../lib/dimensions";
 
 const chainId = chain.id;
 
@@ -58,6 +59,9 @@ export default function Home() {
           value={text}
           placeholder="Write a comment here..."
           onChangeText={setText}
+          style={{
+            maxHeight: vh(30),
+          }}
         />
         {address ? (
           <Button

@@ -16,7 +16,12 @@ export function AuthorLinker({
   }
 
   return (
-    <TouchableOpacity onPress={() => Linking.openURL(authorLink)}>
+    <TouchableOpacity
+      onPress={() => Linking.openURL(authorLink)}
+      style={{
+        flexShrink: 1,
+      }}
+    >
       {children}
     </TouchableOpacity>
   );

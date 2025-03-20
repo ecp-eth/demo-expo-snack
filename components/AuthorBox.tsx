@@ -17,13 +17,16 @@ export function AuthorBox({ author }: AuthorBoxProps) {
     <View
       style={{
         flexDirection: "row",
+        flexShrink: 1,
         alignItems: "center",
         gap: 10,
       }}
     >
       <AuthorAvatar author={enrichedAuthor} />
-      <View>
-        <Text>{nameOrAddress}</Text>
+      <View style={{ flexShrink: 1 }}>
+        <Text ellipsizeMode="tail" numberOfLines={1}>
+          {nameOrAddress}
+        </Text>
       </View>
     </View>
   );
