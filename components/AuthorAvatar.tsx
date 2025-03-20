@@ -1,8 +1,8 @@
 import React from "react";
 import { View, Image } from "react-native";
+import { getCommentAuthorNameOrAddress } from "@ecp.eth/shared/helpers";
 import useEnrichedAuthor from "../hooks/useEnrichedAuthor";
 import { AuthorType } from "../lib/types";
-import { getCommentAuthorNameOrAddress } from "../lib/utils";
 import identicon from "../lib/identicon";
 
 const AVATAR_SIZE = 24;

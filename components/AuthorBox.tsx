@@ -1,6 +1,6 @@
 import React from "react";
 import { AuthorType } from "../lib/types";
-import { getCommentAuthorNameOrAddress } from "../lib/utils";
+import { getCommentAuthorNameOrAddress } from "@ecp.eth/shared/helpers";
 import { View, Text } from "react-native";
 import { AuthorAvatar } from "./AuthorAvatar";
 import useEnrichedAuthor from "../hooks/useEnrichedAuthor";

@@ -1,5 +1,4 @@
 import { waitForTransactionReceipt } from "@wagmi/core";
-import { bigintReplacer } from "./utils";
 import { fetchAPI } from "./fetch";
 import { Hex, TransactionReceipt } from "viem";
 import { CommentData } from "@ecp.eth/sdk/schemas";
@@ -9,6 +8,7 @@ import {
 } from "./schemas";
 import { postCommentAsAuthorViaCommentsV1 } from "./contracts";
 import { chain, config } from "../wagmi.config";
+import { bigintReplacer } from "@ecp.eth/shared/helpers";
 
 const chainId = chain.id;
 

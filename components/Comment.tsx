@@ -3,6 +3,7 @@ import { IndexerAPICommentSchemaType } from "@ecp.eth/sdk/schemas";
 import { View, Text } from "react-native";
 import useEnrichedAuthor from "../hooks/useEnrichedAuthor";
 import { AuthorBox } from "./AuthorBox";
+import { AuthorLinker } from "./AuthorLinker";
 
 export const Comment = ({
   comment,
@@ -21,7 +22,9 @@ export const Comment = ({
       }}
     >
       <View>
-        <AuthorBox author={author} />
+        <AuthorLinker author={author}>
+          <AuthorBox author={author} />
+        </AuthorLinker>
       </View>
       <Text>{comment.content}</Text>
     </View>

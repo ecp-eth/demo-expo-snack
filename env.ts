@@ -9,6 +9,7 @@ export const publicEnvSchema = z.object({
   EXPO_PUBLIC_YOINK_CONTRACT_ADDRESS: HexSchema,
   EXPO_PUBLIC_INDEXER_URL: z.string().url(),
   EXPO_PUBLIC_RPC_URL: z.string().url(),
+  EXPO_PUBLIC_COMMENT_AUTHOR_URL: z.string().url().optional(),
 });
 
 export const publicEnv = publicEnvSchema.parse({
@@ -20,4 +21,5 @@ export const publicEnv = publicEnvSchema.parse({
     .EXPO_PUBLIC_YOINK_CONTRACT_ADDRESS as Hex,
   EXPO_PUBLIC_INDEXER_URL: process.env.EXPO_PUBLIC_INDEXER_URL,
   EXPO_PUBLIC_RPC_URL: process.env.EXPO_PUBLIC_RPC_URL,
+  EXPO_PUBLIC_COMMENT_AUTHOR_URL: process.env.EXPO_PUBLIC_COMMENT_AUTHOR_URL,
 });
