@@ -3,13 +3,17 @@ import {
   IndexerAPICommentWithRepliesSchemaType,
 } from "@ecp.eth/sdk/schemas";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 
-export default ({
-  comment,
-}: {
+type CommentBottomBarProps = {
   comment: IndexerAPICommentSchemaType | IndexerAPICommentWithRepliesSchemaType;
-}) => {
+  onReply: (comment: IndexerAPICommentSchemaType) => void;
+};
+
+export default function CommentBottomBar({
+  comment,
+  onReply,
+}: CommentBottomBarProps) {
   const hasReplies = isIndexerAPICommentWithRepliesSchemaType(comment);
   return (
     <View
@@ -27,10 +31,12 @@ export default ({
         </Text>
       )}
 
-      <AntDesign name="message1" size={20} color="black" />
+      <TouchableOpacity onPress={() => onReply(comment)}>
+        <AntDesign name="message1" size={20} color="black" />
+      </TouchableOpacity>
     </View>
   );
-};
+}
 
 function isIndexerAPICommentWithRepliesSchemaType(
   comment: IndexerAPICommentSchemaType | IndexerAPICommentWithRepliesSchemaType

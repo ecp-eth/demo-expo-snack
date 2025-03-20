@@ -8,12 +8,17 @@ import {
   FlatList,
   Dimensions,
 } from "react-native";
+import { Hex } from "viem";
+import { IndexerAPICommentSchemaType } from "@ecp.eth/sdk/schemas";
 import { publicEnv } from "../env";
 import { Comment } from "./Comment";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Hex } from "viem";
 
-export default () => {
+type CommentSectionProps = {
+  onReply: (comment: IndexerAPICommentSchemaType) => void;
+};
+
+export default function CommentSection({ onReply }: CommentSectionProps) {
   const insets = useSafeAreaInsets();
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
@@ -36,7 +41,7 @@ export default () => {
           signal,
         });
       },
-      getNextPageParam: (lastPage, pages) => {
+      getNextPageParam: (lastPage) => {
         if (!lastPage.pagination.hasNext) {
           return;
         }
@@ -71,8 +76,9 @@ export default () => {
 
   return (
     <FlatList
+      keyboardShouldPersistTaps="handled"
       data={allComments}
-      renderItem={({ item }) => <Comment comment={item} />}
+      renderItem={({ item }) => <Comment comment={item} onReply={onReply} />}
       keyExtractor={(item) => item.id}
       onEndReached={() => {
         if (hasNextPage && !isFetchingNextPage) {
@@ -89,7 +95,7 @@ export default () => {
       }}
     />
   );
-};
+}
 
 const CommentSectionContainer = ({
   children,

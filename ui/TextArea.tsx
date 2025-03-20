@@ -1,11 +1,15 @@
+import { forwardRef, Ref } from "react";
 import { TextInput, TextInputProps } from "react-native";
 
-export default function TextArea({
-  error,
-  style,
-  editable,
-  ...props
-}: TextInputProps & { error?: string | boolean }) {
+export default forwardRef(function TextArea(
+  {
+    error,
+    style,
+    editable,
+    ...props
+  }: TextInputProps & { error?: string | boolean },
+  ref: Ref<TextInput>
+) {
   return (
     <TextInput
       {...props}
@@ -23,6 +27,7 @@ export default function TextArea({
         style,
       ]}
       multiline={true}
+      ref={ref}
     />
   );
-}
+});
