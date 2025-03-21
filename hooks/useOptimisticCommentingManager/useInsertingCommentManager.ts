@@ -6,7 +6,6 @@ import {
   IndexerAPIListCommentsSchemaType,
   IndexerAPICommentWithRepliesSchemaType,
   IndexerAPIListCommentRepliesSchemaType,
-  IndexerAPIListCommentsSchema,
 } from "@ecp.eth/sdk/schemas";
 import {
   FetchCommentInfinityQuerySchema,
@@ -159,14 +158,14 @@ function insertPendingCommentOperationToCache(
       return;
     }
 
-    const cachedListIndexAPIListComments = parsed.data.pages[0];
+    const cachedArrayOfIndexerAPIListComments = parsed.data.pages;
 
     pendingCommentOperations.forEach((pendingCommentOperation) => {
       const parentId = pendingCommentOperation.response.data.parentId;
       const parentStructure = isZeroHex(parentId)
-        ? cachedListIndexAPIListComments
+        ? cachedArrayOfIndexerAPIListComments[0]
         : getParentStructureForInserting(
-            cachedListIndexAPIListComments,
+            cachedArrayOfIndexerAPIListComments,
             pendingCommentOperation.response.data.parentId
           );
 
@@ -185,29 +184,33 @@ function insertPendingCommentOperationToCache(
 }
 
 function getParentStructureForInserting(
-  indexerAPIListCommentResult: IndexerAPIListCommentRepliesSchemaType,
+  arrayOfIndexerAPICommentWithReplies: IndexerAPIListCommentRepliesSchemaType[],
   parentId: Hex
 ): IndexerAPIListCommentRepliesSchemaType {
   let parentStructure: IndexerAPIListCommentRepliesSchemaType | undefined;
 
-  everyIndexerAPIListComments(
-    indexerAPIListCommentResult,
-    (indexerAPIComment) => {
-      if (indexerAPIComment.id === parentId) {
-        // narrow type, don't safeParse as it create a new object.
-        if (!isIndexerAPICommentWithRepliesSchema(indexerAPIComment)) {
-          // if we hit the depth limit, this will happen, lets quietly return
-          console.warn("optimistical update hits the depth limit");
-          return false;
-        }
+  arrayOfIndexerAPICommentWithReplies.forEach(
+    (indexerAPICommentWithReplies) => {
+      everyIndexerAPIListComments(
+        indexerAPICommentWithReplies,
+        (indexerAPIComment) => {
+          if (indexerAPIComment.id === parentId) {
+            // narrow type, don't safeParse as it create a new object.
+            if (!isIndexerAPICommentWithRepliesSchema(indexerAPIComment)) {
+              // if we hit the depth limit, this will happen, lets quietly return
+              console.warn("optimistical update hits the depth limit");
+              return false;
+            }
 
-        parentStructure = indexerAPIComment.replies;
-        return false;
-      }
+            parentStructure = indexerAPIComment.replies;
+            return false;
+          }
+        }
+      );
     }
   );
 
-  return parentStructure ?? indexerAPIListCommentResult;
+  return parentStructure ?? arrayOfIndexerAPICommentWithReplies[0];
 }
 
 /**
