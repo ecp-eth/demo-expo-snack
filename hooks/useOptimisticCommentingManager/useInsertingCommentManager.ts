@@ -9,6 +9,7 @@ import {
   IndexerAPIListCommentsSchema,
 } from "@ecp.eth/sdk/schemas";
 import {
+  FetchCommentInfinityQuerySchema,
   PendingCommentOperationSchemaType,
   PendingOperationSchema,
   PendingOperationSchemaType,
@@ -142,19 +143,23 @@ function insertPendingCommentOperationToCache(
     return;
   }
 
-  client.setQueryData(queryKey, (oldData: unknown) => {
-    if (!oldData) {
+  client.setQueryData(queryKey, (existingCache: unknown) => {
+    if (!existingCache) {
       return;
     }
 
-    const parsed = IndexerAPIListCommentsSchema.safeParse(oldData);
+    const parsed = FetchCommentInfinityQuerySchema.safeParse(existingCache);
 
     if (!parsed.success) {
-      console.error("Failed to parse old data, this is likely a bug");
+      console.error(
+        "Failed to parse existing cache data, this is likely a bug. detailed error follows:",
+        parsed.error
+      );
+      console.error(existingCache);
       return;
     }
 
-    const cachedListIndexAPIListComments = parsed.data;
+    const cachedListIndexAPIListComments = parsed.data.pages[0];
 
     pendingCommentOperations.forEach((pendingCommentOperation) => {
       const parentId = pendingCommentOperation.response.data.parentId;
@@ -175,7 +180,7 @@ function insertPendingCommentOperationToCache(
       popOutOfLimitItemsFromList(parentStructure);
     });
 
-    return cachedListIndexAPIListComments;
+    return parsed.data;
   });
 }
 

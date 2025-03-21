@@ -60,6 +60,7 @@ export default function CommentForm({
         // user returned without error and is still posting (could bew still signing)
         // probably the wallet hangs we reset state to allow they to try again
         reset();
+        setTextAreaDisabled(false);
       }
     }, [])
   );
@@ -111,6 +112,7 @@ export default function CommentForm({
                   targetUri: publicEnv.EXPO_PUBLIC_TARGET_URI,
                   author: address,
                   chainId,
+                  parentId: replyTo?.id,
                 });
               setText("");
 
@@ -123,6 +125,10 @@ export default function CommentForm({
                   hash: commentId,
                 },
               });
+
+              if (!!replyTo) {
+                onCancelReply();
+              }
             } finally {
               setTextAreaDisabled(false);
             }

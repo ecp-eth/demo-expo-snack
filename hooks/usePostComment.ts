@@ -1,5 +1,5 @@
 import { postComment } from "../lib/comments";
-import { SignCommentPayloadRequestSchemaType } from "../lib/schemas";
+import { SignCommentPayloadRequestSchemaType } from "../lib/generated/schemas";
 import { useMutation } from "@tanstack/react-query";
 
 export const usePostComment = () => {

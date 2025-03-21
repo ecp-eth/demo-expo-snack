@@ -15,7 +15,7 @@ echo "Syncing API schemas..."
 
 echo "PWD: $(pwd)"
 
-cp "${SOURCE_REPO_PATH}/apps/demo/src/lib/schemas.ts" ${TARGET_PATHNAME}
+cp "${SOURCE_REPO_PATH}/apps/demo/src/lib/generated/schemas.ts" ${TARGET_PATHNAME}
 
 { echo -e "// !!! DO NOT MODIFY !!!\n// THIS FILE IS COPIED DIRECTLY FROM DEMO APP\n// Run script instead: \`pnpm run api:schema:sync\`"; cat $TARGET_PATHNAME; } > temp 
 

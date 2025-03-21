@@ -5,7 +5,7 @@ import { CommentData } from "@ecp.eth/sdk/schemas";
 import {
   SignCommentPayloadRequestSchemaType,
   SignCommentResponseClientSchema,
-} from "./schemas";
+} from "./generated/schemas";
 import { postCommentAsAuthorViaCommentsV1 } from "./contracts";
 import { chain, config } from "../wagmi.config";
 import { bigintReplacer } from "@ecp.eth/shared/helpers";
