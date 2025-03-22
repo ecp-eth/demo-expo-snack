@@ -1,34 +1,12 @@
-import {
-  COMMENTS_V1_ADDRESS,
-  CommentsV1Abi,
-  createCommentSuffixData,
-} from "@ecp.eth/sdk";
+import { COMMENTS_V1_ADDRESS, CommentsV1Abi } from "@ecp.eth/sdk";
 import { CommentData } from "@ecp.eth/sdk/schemas";
-import { Hex, parseAbi } from "viem";
-import { publicEnv } from "../env";
+import { Hex } from "viem";
 import { writeContract } from "@wagmi/core";
 import { config } from "../wagmi.config";
 
 type PostCommentViaContractParams = {
   commentData: CommentData;
   appSignature: Hex;
-};
-
-export const postCommentViaYoink = async ({
-  appSignature,
-  commentData,
-}: PostCommentViaContractParams) => {
-  const commentDataSuffix = createCommentSuffixData({
-    commentData,
-    appSignature,
-  });
-
-  return await writeContract(config, {
-    abi: parseAbi(["function yoink()"]),
-    functionName: "yoink",
-    address: publicEnv.EXPO_PUBLIC_YOINK_CONTRACT_ADDRESS,
-    dataSuffix: commentDataSuffix,
-  });
 };
 
 export const postCommentAsAuthorViaCommentsV1 = async ({
