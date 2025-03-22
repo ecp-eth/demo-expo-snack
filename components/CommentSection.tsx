@@ -90,6 +90,7 @@ export default function CommentSection({ onReply }: CommentSectionProps) {
         isFetchingNextPage ? <ActivityIndicator /> : null
       }
       contentContainerStyle={{
+        paddingTop: 30,
         paddingHorizontal: 30,
         paddingBottom: insets.bottom,
       }}
