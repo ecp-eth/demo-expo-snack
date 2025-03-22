@@ -1,6 +1,7 @@
 const theme = {
   colors: {
     reply: "#64B5F6",
+    hr: "#FAFAFA",
 
     border: {
       default: "#000000",

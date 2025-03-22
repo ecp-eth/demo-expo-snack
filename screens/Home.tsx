@@ -7,7 +7,8 @@ import CommentForm from "../components/CommentForm";
 import WhiteFadingGradient from "../ui/WhiteFadingGradient";
 
 export default function Home() {
-  const [replyToComment, setReplyToComment] =
+  const [justViewingReplies, setJustViewingReplies] = useState(false);
+  const [replyingComment, setReplyingComment] =
     useState<IndexerAPICommentSchemaType>();
 
   return (
@@ -30,14 +31,27 @@ export default function Home() {
         >
           <StatusBar />
           <CommentForm
-            replyTo={replyToComment}
-            onCancelReply={() => setReplyToComment(undefined)}
+            replyingComment={replyingComment}
+            justViewingReplies={justViewingReplies}
+            onCancelReply={() => setReplyingComment(undefined)}
           />
           <WhiteFadingGradient />
         </View>
       </View>
       <CommentSection
-        onReply={(replyToComment) => setReplyToComment(replyToComment)}
+        replyingComment={replyingComment}
+        onReply={(replyingComment) => {
+          setJustViewingReplies(false);
+          setReplyingComment(replyingComment);
+        }}
+        onViewReplies={(replyingComment) => {
+          setJustViewingReplies(true);
+          setReplyingComment(replyingComment);
+        }}
+        onCloseViewReplies={() => {
+          setJustViewingReplies(false);
+          setReplyingComment(undefined);
+        }}
       />
     </View>
   );

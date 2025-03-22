@@ -3,7 +3,6 @@ import {
   IndexerAPICommentSchemaType,
   IndexerAPICommentWithRepliesSchemaType,
 } from "@ecp.eth/sdk/schemas";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import { View, Text } from "react-native";
 import useEnrichedAuthor from "../hooks/useEnrichedAuthor";
 import { AuthorBox } from "./AuthorBox";
@@ -11,16 +10,15 @@ import { AuthorLinker } from "./AuthorLinker";
 import TimeBox from "./TimeBox";
 import CommentBottomBar from "./CommentBottomBar";
 
-export const Comment = ({
-  comment,
-  onReply,
-  onViewReplies,
-}: {
+type CommentProps = {
   comment: IndexerAPICommentSchemaType | IndexerAPICommentWithRepliesSchemaType;
-  onReply: (comment: IndexerAPICommentSchemaType) => void;
-  onViewReplies: (comment: IndexerAPICommentSchemaType) => void;
-}) => {
+  onReply?: (comment: IndexerAPICommentSchemaType) => void;
+  onViewReplies?: (comment: IndexerAPICommentSchemaType) => void;
+};
+
+export const Comment = ({ comment, onReply, onViewReplies }: CommentProps) => {
   const author = useEnrichedAuthor(comment.author);
+  const isRootComment = !!onViewReplies;
   return (
     <View
       style={{
@@ -46,11 +44,13 @@ export const Comment = ({
         <TimeBox timestamp={comment.timestamp} />
       </View>
       <Text>{comment.content}</Text>
-      <CommentBottomBar
-        comment={comment}
-        onReply={onReply}
-        onViewReplies={onViewReplies}
-      />
+      {isRootComment && (
+        <CommentBottomBar
+          comment={comment}
+          onReply={onReply}
+          onViewReplies={onViewReplies}
+        />
+      )}
     </View>
   );
 };

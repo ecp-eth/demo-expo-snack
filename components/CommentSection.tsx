@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { fetchComments } from "@ecp.eth/sdk";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import {
@@ -8,18 +8,34 @@ import {
   FlatList,
   Dimensions,
 } from "react-native";
+import {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 import { Hex } from "viem";
 import { IndexerAPICommentSchemaType } from "@ecp.eth/sdk/schemas";
 import { publicEnv } from "../env";
 import { Comment } from "./Comment";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import RepliesSection from "./RepliesSection";
 
 type CommentSectionProps = {
   onReply: (comment: IndexerAPICommentSchemaType) => void;
+  onViewReplies: (comment: IndexerAPICommentSchemaType) => void;
+  onCloseViewReplies: () => void;
+  replyingComment: IndexerAPICommentSchemaType | undefined;
 };
 
-export default function CommentSection({ onReply }: CommentSectionProps) {
-  const insets = useSafeAreaInsets();
+export default function CommentSection({
+  onReply,
+  onViewReplies,
+  onCloseViewReplies,
+  replyingComment,
+}: CommentSectionProps) {
+  const { repliesSectionAnimatedStyle, handleCloseReplies, handleViewReplies } =
+    useRepliesAnimation(onViewReplies, onCloseViewReplies);
+
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
       queryKey: ["comments"],
@@ -75,28 +91,36 @@ export default function CommentSection({ onReply }: CommentSectionProps) {
   }
 
   return (
-    <FlatList
-      keyboardShouldPersistTaps="handled"
-      data={allComments}
-      renderItem={({ item }) => (
-        <Comment comment={item} onReply={onReply} onViewReplies={() => {}} />
-      )}
-      keyExtractor={(item) => item.id}
-      onEndReached={() => {
-        if (hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
+    <CommentSectionContainer>
+      <FlatList
+        keyboardShouldPersistTaps="handled"
+        data={allComments}
+        renderItem={({ item }) => (
+          <Comment
+            comment={item}
+            onReply={onReply}
+            onViewReplies={handleViewReplies}
+          />
+        )}
+        keyExtractor={(item) => item.id}
+        onEndReached={() => {
+          if (hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+          }
+        }}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={() =>
+          isFetchingNextPage ? <ActivityIndicator /> : null
         }
-      }}
-      onEndReachedThreshold={0.5}
-      ListFooterComponent={() =>
-        isFetchingNextPage ? <ActivityIndicator /> : null
-      }
-      contentContainerStyle={{
-        paddingTop: 30,
-        paddingHorizontal: 30,
-        paddingBottom: insets.bottom,
-      }}
-    />
+      />
+      {replyingComment && (
+        <RepliesSection
+          parentComment={replyingComment}
+          animatedStyle={repliesSectionAnimatedStyle}
+          onClose={handleCloseReplies}
+        />
+      )}
+    </CommentSectionContainer>
   );
 }
 
@@ -110,11 +134,44 @@ const CommentSectionContainer = ({
   return (
     <View
       style={{
+        paddingTop: 30,
         paddingHorizontal: 30,
         paddingBottom: insets.bottom,
       }}
     >
-      {children}
+      <View style={{ position: "relative", overflow: "hidden" }}>
+        {children}
+      </View>
     </View>
   );
+};
+
+const useRepliesAnimation = (
+  onViewReplies: (comment: IndexerAPICommentSchemaType) => void,
+  onCloseViewReplies: () => void
+) => {
+  const repliesLeft = useSharedValue<`${number}%`>("100%");
+  const repliesSectionAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: repliesLeft.value }],
+    };
+  });
+  const handleViewReplies = (comment: IndexerAPICommentSchemaType) => {
+    onViewReplies(comment);
+    repliesLeft.value = withTiming("0%", {
+      duration: 200,
+    });
+  };
+  const handleCloseReplies = () => {
+    onCloseViewReplies();
+    repliesLeft.value = withTiming("100%", {
+      duration: 200,
+    });
+  };
+
+  return {
+    repliesSectionAnimatedStyle,
+    handleViewReplies,
+    handleCloseReplies,
+  };
 };

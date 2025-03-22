@@ -8,7 +8,7 @@ import theme from "../theme";
 
 type CommentBottomBarProps = {
   comment: IndexerAPICommentSchemaType | IndexerAPICommentWithRepliesSchemaType;
-  onReply: (comment: IndexerAPICommentSchemaType) => void;
+  onReply?: (comment: IndexerAPICommentSchemaType) => void;
   onViewReplies: (comment: IndexerAPICommentSchemaType) => void;
 };
 
@@ -41,9 +41,11 @@ export default function CommentBottomBar({
         </TouchableOpacity>
       )}
 
-      <TouchableOpacity onPress={() => onReply(comment)}>
-        <AntDesign name="message1" size={20} color="black" />
-      </TouchableOpacity>
+      {onReply && (
+        <TouchableOpacity onPress={() => onReply(comment)}>
+          <AntDesign name="message1" size={20} color="black" />
+        </TouchableOpacity>
+      )}
     </View>
   );
 }

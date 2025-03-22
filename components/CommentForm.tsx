@@ -24,12 +24,14 @@ import theme from "../theme";
 const chainId = chain.id;
 
 type CommentFormProps = {
-  replyTo?: IndexerAPICommentSchemaType;
+  justViewingReplies?: boolean;
+  replyingComment?: IndexerAPICommentSchemaType;
   onCancelReply: () => void;
 };
 
 export default function CommentForm({
-  replyTo,
+  justViewingReplies,
+  replyingComment,
   onCancelReply,
 }: CommentFormProps) {
   const { address } = useAccount();
@@ -38,7 +40,7 @@ export default function CommentForm({
   const [text, setText] = useState("");
   const { switchChainAsync } = useSwitchChain();
   const keyboardRemainingHeight = useKeyboardRemainingheight(
-    !!replyTo ? 0.2 : 0.5
+    !!replyingComment ? 0.2 : 0.5
   );
 
   const {
@@ -67,21 +69,33 @@ export default function CommentForm({
   );
 
   useEffect(() => {
-    if (!replyTo) {
+    if (justViewingReplies) {
+      return;
+    }
+
+    if (!replyingComment) {
       return;
     }
     textAreaRef.current?.focus();
-  }, [replyTo]);
+  }, [replyingComment, justViewingReplies]);
 
   return (
     <View style={{ gap: 20 }}>
-      {replyTo && <ReplyToComment comment={replyTo} onClose={onCancelReply} />}
+      {replyingComment && (
+        <ReplyToComment
+          comment={replyingComment}
+          onClose={onCancelReply}
+          justViewingReplies={justViewingReplies}
+        />
+      )}
 
       <TextArea
         editable={!textAreaDisabled}
         value={text}
         placeholder={
-          !!replyTo ? "Write a reply here..." : "Write a comment here..."
+          !!replyingComment
+            ? "Write a reply here..."
+            : "Write a comment here..."
         }
         onChangeText={setText}
         style={{
@@ -113,7 +127,7 @@ export default function CommentForm({
                   targetUri: publicEnv.EXPO_PUBLIC_TARGET_URI,
                   author: address,
                   chainId,
-                  parentId: replyTo?.id,
+                  parentId: replyingComment?.id,
                 });
               setText("");
 
@@ -127,7 +141,7 @@ export default function CommentForm({
                 },
               });
 
-              if (!!replyTo) {
+              if (!!replyingComment) {
                 onCancelReply();
               }
             } finally {
@@ -135,7 +149,7 @@ export default function CommentForm({
             }
           }}
         >
-          {!!replyTo ? "Post reply" : "Post comment"}
+          {!!replyingComment ? "Post reply" : "Post comment"}
         </Button>
       ) : null}
       {!address ? (
@@ -148,9 +162,14 @@ export default function CommentForm({
 type ReplyToCommentProps = {
   comment: IndexerAPICommentSchemaType;
   onClose: () => void;
+  justViewingReplies?: boolean;
 };
 
-function ReplyToComment({ comment, onClose }: ReplyToCommentProps) {
+function ReplyToComment({
+  comment,
+  onClose,
+  justViewingReplies,
+}: ReplyToCommentProps) {
   const keyboardRemainingHeight = useKeyboardRemainingheight(0.3);
   return (
     <View
@@ -174,9 +193,11 @@ function ReplyToComment({ comment, onClose }: ReplyToCommentProps) {
           )}
         </Text>
       </View>
-      <TouchableOpacity onPress={onClose} style={{ marginStart: 10 }}>
-        <Ionicons name="close-circle" size={24} color={theme.colors.reply} />
-      </TouchableOpacity>
+      {!justViewingReplies && (
+        <TouchableOpacity onPress={onClose} style={{ marginStart: 10 }}>
+          <Ionicons name="close-circle" size={24} color={theme.colors.reply} />
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
