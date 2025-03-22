@@ -33,6 +33,7 @@ export default function CommentSection({
   onCloseViewReplies,
   replyingComment,
 }: CommentSectionProps) {
+  const insets = useSafeAreaInsets();
   const { repliesSectionAnimatedStyle, handleCloseReplies, handleViewReplies } =
     useRepliesAnimation(onViewReplies, onCloseViewReplies);
 
@@ -112,14 +113,15 @@ export default function CommentSection({
         ListFooterComponent={() =>
           isFetchingNextPage ? <ActivityIndicator /> : null
         }
+        contentContainerStyle={{
+          paddingBottom: insets.bottom,
+        }}
       />
-      {replyingComment && (
-        <RepliesSection
-          parentComment={replyingComment}
-          animatedStyle={repliesSectionAnimatedStyle}
-          onClose={handleCloseReplies}
-        />
-      )}
+      <RepliesSection
+        parentComment={replyingComment}
+        animatedStyle={repliesSectionAnimatedStyle}
+        onClose={handleCloseReplies}
+      />
     </CommentSectionContainer>
   );
 }
@@ -129,17 +131,15 @@ const CommentSectionContainer = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const insets = useSafeAreaInsets();
-
   return (
     <View
       style={{
+        flex: 1,
         paddingTop: 30,
         paddingHorizontal: 30,
-        paddingBottom: insets.bottom,
       }}
     >
-      <View style={{ position: "relative", overflow: "hidden" }}>
+      <View style={{ flex: 1, position: "relative", overflow: "hidden" }}>
         {children}
       </View>
     </View>

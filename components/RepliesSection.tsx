@@ -13,7 +13,7 @@ import { Comment } from "./Comment";
 import { IndexerAPICommentSchemaType } from "@ecp.eth/sdk/schemas";
 
 type RepliesSectionProps = {
-  parentComment: IndexerAPICommentSchemaType;
+  parentComment?: IndexerAPICommentSchemaType;
   onClose: () => void;
   animatedStyle?: AnimatedStyle<ViewStyle>;
 };
