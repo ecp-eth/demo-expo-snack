@@ -19,6 +19,7 @@ import {
   TRUNCATE_COMMENT_LINES,
 } from "../lib/constants";
 import useKeyboardRemainingheight from "../hooks/useKeyboardRemainingHeight";
+import theme from "../theme";
 
 const chainId = chain.id;
 
@@ -155,7 +156,7 @@ function ReplyToComment({ comment, onClose }: ReplyToCommentProps) {
     <View
       style={{
         borderLeftWidth: 2,
-        borderColor: "#64B5F6",
+        borderColor: theme.colors.reply,
         paddingStart: 10,
         maxHeight: keyboardRemainingHeight,
 
@@ -174,7 +175,7 @@ function ReplyToComment({ comment, onClose }: ReplyToCommentProps) {
         </Text>
       </View>
       <TouchableOpacity onPress={onClose} style={{ marginStart: 10 }}>
-        <Ionicons name="close-circle" size={24} color="#64B5F6" />
+        <Ionicons name="close-circle" size={24} color={theme.colors.reply} />
       </TouchableOpacity>
     </View>
   );

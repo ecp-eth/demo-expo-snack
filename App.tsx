@@ -3,6 +3,7 @@ import { View } from "react-native";
 import Providers from "./Providers";
 import SideBarLayout from "./components/SideBarLayout";
 import Home from "./screens/Home";
+import theme from "./theme";
 
 export default function App() {
   return (
@@ -10,7 +11,7 @@ export default function App() {
       <View
         style={{
           flex: 1,
-          backgroundColor: "#ecf0f1",
+          backgroundColor: theme.colors.background.sideBar,
         }}
       >
         <SideBarLayout>

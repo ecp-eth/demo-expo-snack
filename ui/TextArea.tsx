@@ -1,5 +1,6 @@
 import { forwardRef, Ref } from "react";
 import { TextInput, TextInputProps } from "react-native";
+import theme from "../theme";
 
 export default forwardRef(function TextArea(
   {
@@ -21,8 +22,15 @@ export default forwardRef(function TextArea(
           paddingHorizontal: 10,
           paddingVertical: 5,
           minHeight: 80,
-          borderColor: error ? "red" : "#000000",
-          color: editable ? "#000" : "#808080",
+          borderColor: error
+            ? theme.colors.border.error
+            : theme.colors.border.default,
+          color: editable
+            ? theme.colors.text.default
+            : theme.colors.text.nonEditable,
+          backgroundColor: editable
+            ? theme.colors.background.default
+            : theme.colors.background.nonEditable,
         },
         style,
       ]}

@@ -1,4 +1,5 @@
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
+import theme from "../theme";
 
 type ButtonProps = React.PropsWithChildren<{
   onPress?: () => void;
@@ -25,7 +26,9 @@ export default function Button({
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: greyOut ? "#CDCDCD" : "#000",
+        backgroundColor: greyOut
+          ? theme.colors.background.disabled
+          : theme.colors.background.button,
         paddingVertical: 12,
         paddingHorizontal: 20,
         borderRadius: 20,
@@ -42,7 +45,9 @@ export default function Button({
       ) : null}
       <Text
         style={{
-          color: greyOut ? "#EFEFEF" : "#fff",
+          color: greyOut
+            ? theme.colors.text.disabled
+            : theme.colors.text.button,
           textAlign: "center",
         }}
         disabled={disabled}

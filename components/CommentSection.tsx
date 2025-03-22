@@ -78,7 +78,9 @@ export default function CommentSection({ onReply }: CommentSectionProps) {
     <FlatList
       keyboardShouldPersistTaps="handled"
       data={allComments}
-      renderItem={({ item }) => <Comment comment={item} onReply={onReply} />}
+      renderItem={({ item }) => (
+        <Comment comment={item} onReply={onReply} onViewReplies={() => {}} />
+      )}
       keyExtractor={(item) => item.id}
       onEndReached={() => {
         if (hasNextPage && !isFetchingNextPage) {

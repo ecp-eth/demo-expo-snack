@@ -14,9 +14,11 @@ import CommentBottomBar from "./CommentBottomBar";
 export const Comment = ({
   comment,
   onReply,
+  onViewReplies,
 }: {
   comment: IndexerAPICommentSchemaType | IndexerAPICommentWithRepliesSchemaType;
   onReply: (comment: IndexerAPICommentSchemaType) => void;
+  onViewReplies: (comment: IndexerAPICommentSchemaType) => void;
 }) => {
   const author = useEnrichedAuthor(comment.author);
   return (
@@ -44,7 +46,11 @@ export const Comment = ({
         <TimeBox timestamp={comment.timestamp} />
       </View>
       <Text>{comment.content}</Text>
-      <CommentBottomBar comment={comment} onReply={onReply} />
+      <CommentBottomBar
+        comment={comment}
+        onReply={onReply}
+        onViewReplies={onViewReplies}
+      />
     </View>
   );
 };
