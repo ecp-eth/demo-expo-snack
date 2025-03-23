@@ -14,7 +14,6 @@ import {
   TRUNCATE_COMMENT_LINES,
 } from "../lib/constants";
 import { truncateText } from "../lib/utils";
-import Link from "../ui/Link";
 import LinkButton from "../ui/LinkButton";
 
 type CommentProps = {

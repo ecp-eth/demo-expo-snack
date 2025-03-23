@@ -1,5 +1,11 @@
 import React, { useCallback, useEffect, useRef } from "react";
-import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Dimensions,
+} from "react-native";
 import { useAccount, useSwitchChain } from "wagmi";
 import { ConnectButton } from "@reown/appkit-wagmi-react-native";
 import { IndexerAPICommentSchemaType } from "@ecp.eth/sdk/schemas";
@@ -13,15 +19,14 @@ import { chain } from "../wagmi.config";
 import { useOptimisticCommentingManager } from "../hooks/useOptimisticCommentingManager";
 import useShowErrorInToast from "../hooks/useShowErrorInToast";
 import useAppForegroundedEffect from "../hooks/useAppForegroundedEffect";
-import { truncateText } from "../lib/utils";
-import {
-  TRUNCATE_COMMENT_LENGTH,
-  TRUNCATE_COMMENT_LINES,
-} from "../lib/constants";
 import useKeyboardRemainingheight from "../hooks/useKeyboardRemainingHeight";
 import theme from "../theme";
+import { ScrollView } from "react-native-gesture-handler";
 
 const chainId = chain.id;
+const TOTAL_COMMENT_AREA_PERCENTAGE = 0.5;
+const HAS_REPLY_TEXT_TEXTAREA_PERCENTAGE = 0.2;
+const HAS_REPLY_TEXT_COMMENT_CONTENT_PERCENTAGE = 0.1;
 
 type CommentFormProps = {
   justViewingReplies?: boolean;
@@ -40,7 +45,9 @@ export default function CommentForm({
   const [text, setText] = useState("");
   const { switchChainAsync } = useSwitchChain();
   const keyboardRemainingHeight = useKeyboardRemainingheight(
-    !!replyingComment ? 0.2 : 0.5
+    !!replyingComment
+      ? HAS_REPLY_TEXT_TEXTAREA_PERCENTAGE
+      : TOTAL_COMMENT_AREA_PERCENTAGE
   );
 
   const {
@@ -170,29 +177,28 @@ function ReplyToComment({
   onClose,
   justViewingReplies,
 }: ReplyToCommentProps) {
-  const keyboardRemainingHeight = useKeyboardRemainingheight(0.3);
+  const replyingCommentContentHeight = useKeyboardRemainingheight(
+    HAS_REPLY_TEXT_COMMENT_CONTENT_PERCENTAGE
+  );
   return (
     <View
       style={{
         borderLeftWidth: 2,
         borderColor: theme.colors.reply,
         paddingStart: 10,
-        maxHeight: keyboardRemainingHeight,
+        maxHeight: Math.min(
+          replyingCommentContentHeight,
+          Dimensions.get("window").height * 0.3
+        ),
 
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
       }}
     >
-      <View style={{ flex: 1, flexShrink: 1 }}>
-        <Text>
-          {truncateText(
-            comment.content,
-            TRUNCATE_COMMENT_LENGTH,
-            TRUNCATE_COMMENT_LINES
-          )}
-        </Text>
-      </View>
+      <ScrollView style={{ flex: 1, flexShrink: 1 }}>
+        <Text>{comment.content}</Text>
+      </ScrollView>
       {!justViewingReplies && (
         <TouchableOpacity onPress={onClose} style={{ marginStart: 10 }}>
           <Ionicons name="close-circle" size={24} color={theme.colors.reply} />
