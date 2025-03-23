@@ -19,6 +19,7 @@ import { publicEnv } from "../env";
 import { Comment } from "./Comment";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import RepliesSection from "./RepliesSection";
+import ApplyFadeToScrollable from "./ApplyFadeToScrollable";
 
 type CommentSectionProps = {
   onReply: (comment: IndexerAPICommentSchemaType) => void;
@@ -93,31 +94,33 @@ export default function CommentSection({
 
   return (
     <CommentSectionContainer disablePaddingVertical={true}>
-      <FlatList
-        keyboardShouldPersistTaps="handled"
-        data={allComments}
-        renderItem={({ item }) => (
-          <Comment
-            comment={item}
-            onReply={onReply}
-            onViewReplies={handleViewReplies}
-          />
-        )}
-        keyExtractor={(item) => item.id}
-        onEndReached={() => {
-          if (hasNextPage && !isFetchingNextPage) {
-            fetchNextPage();
+      <ApplyFadeToScrollable>
+        <FlatList
+          keyboardShouldPersistTaps="handled"
+          data={allComments}
+          renderItem={({ item }) => (
+            <Comment
+              comment={item}
+              onReply={onReply}
+              onViewReplies={handleViewReplies}
+            />
+          )}
+          keyExtractor={(item) => item.id}
+          onEndReached={() => {
+            if (hasNextPage && !isFetchingNextPage) {
+              fetchNextPage();
+            }
+          }}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={() =>
+            isFetchingNextPage ? <ActivityIndicator /> : null
           }
-        }}
-        onEndReachedThreshold={0.5}
-        ListFooterComponent={() =>
-          isFetchingNextPage ? <ActivityIndicator /> : null
-        }
-        contentContainerStyle={{
-          paddingTop: 30,
-          paddingBottom: insets.bottom,
-        }}
-      />
+          contentContainerStyle={{
+            paddingTop: 30,
+            paddingBottom: insets.bottom,
+          }}
+        />
+      </ApplyFadeToScrollable>
       <RepliesSection
         parentComment={replyingComment}
         animatedStyle={repliesSectionAnimatedStyle}

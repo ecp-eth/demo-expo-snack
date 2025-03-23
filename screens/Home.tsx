@@ -35,7 +35,6 @@ export default function Home() {
             justViewingReplies={justViewingReplies}
             onCancelReply={() => setReplyingComment(undefined)}
           />
-          <WhiteFadingGradient />
         </View>
       </View>
       <CommentSection

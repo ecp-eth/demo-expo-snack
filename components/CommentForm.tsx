@@ -22,6 +22,7 @@ import useAppForegroundedEffect from "../hooks/useAppForegroundedEffect";
 import useKeyboardRemainingheight from "../hooks/useKeyboardRemainingHeight";
 import theme from "../theme";
 import { ScrollView } from "react-native-gesture-handler";
+import ApplyFadeToScrollable from "./ApplyFadeToScrollable";
 
 const chainId = chain.id;
 const TOTAL_COMMENT_AREA_PERCENTAGE = 0.5;
@@ -196,9 +197,14 @@ function ReplyToComment({
         alignItems: "center",
       }}
     >
-      <ScrollView style={{ flex: 1, flexShrink: 1 }}>
-        <Text>{comment.content}</Text>
-      </ScrollView>
+      <ApplyFadeToScrollable
+        style={{ flex: 1, flexShrink: 1 }}
+        fadingPercentage={0.7}
+      >
+        <ScrollView>
+          <Text>{comment.content}</Text>
+        </ScrollView>
+      </ApplyFadeToScrollable>
       {!justViewingReplies && (
         <TouchableOpacity onPress={onClose} style={{ marginStart: 10 }}>
           <Ionicons name="close-circle" size={24} color={theme.colors.reply} />
