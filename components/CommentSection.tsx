@@ -92,7 +92,7 @@ export default function CommentSection({
   }
 
   return (
-    <CommentSectionContainer>
+    <CommentSectionContainer disablePaddingVertical={true}>
       <FlatList
         keyboardShouldPersistTaps="handled"
         data={allComments}
@@ -114,6 +114,7 @@ export default function CommentSection({
           isFetchingNextPage ? <ActivityIndicator /> : null
         }
         contentContainerStyle={{
+          paddingTop: 30,
           paddingBottom: insets.bottom,
         }}
       />
@@ -128,14 +129,16 @@ export default function CommentSection({
 
 const CommentSectionContainer = ({
   children,
+  disablePaddingVertical = false,
 }: {
   children: React.ReactNode;
+  disablePaddingVertical?: boolean;
 }) => {
   return (
     <View
       style={{
         flex: 1,
-        paddingTop: 30,
+        paddingTop: disablePaddingVertical ? 0 : 30,
         paddingHorizontal: 30,
       }}
     >
