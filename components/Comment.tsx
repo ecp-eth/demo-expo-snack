@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   IndexerAPICommentSchemaType,
   IndexerAPICommentWithRepliesSchemaType,
@@ -9,6 +9,13 @@ import { AuthorBox } from "./AuthorBox";
 import { AuthorLinker } from "./AuthorLinker";
 import TimeBox from "./TimeBox";
 import CommentBottomBar from "./CommentBottomBar";
+import {
+  TRUNCATE_COMMENT_LENGTH,
+  TRUNCATE_COMMENT_LINES,
+} from "../lib/constants";
+import { truncateText } from "../lib/utils";
+import Link from "../ui/Link";
+import LinkButton from "../ui/LinkButton";
 
 type CommentProps = {
   comment: IndexerAPICommentSchemaType | IndexerAPICommentWithRepliesSchemaType;
@@ -17,6 +24,7 @@ type CommentProps = {
 };
 
 export const Comment = ({ comment, onReply, onViewReplies }: CommentProps) => {
+  const [showMore, setShowMore] = useState(false);
   const author = useEnrichedAuthor(comment.author);
   const isRootComment = !!onViewReplies;
   return (
@@ -43,7 +51,26 @@ export const Comment = ({ comment, onReply, onViewReplies }: CommentProps) => {
 
         <TimeBox timestamp={comment.timestamp} />
       </View>
-      <Text>{comment.content}</Text>
+      {comment.content.length < TRUNCATE_COMMENT_LENGTH || showMore ? (
+        <Text>{comment.content}</Text>
+      ) : (
+        <>
+          <Text>
+            {truncateText(
+              comment.content,
+              TRUNCATE_COMMENT_LENGTH,
+              TRUNCATE_COMMENT_LINES
+            )}
+          </Text>
+          <LinkButton
+            onPress={() => {
+              setShowMore(true);
+            }}
+          >
+            Show full comment
+          </LinkButton>
+        </>
+      )}
       {isRootComment && (
         <CommentBottomBar
           comment={comment}

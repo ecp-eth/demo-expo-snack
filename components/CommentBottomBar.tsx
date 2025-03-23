@@ -5,6 +5,7 @@ import {
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { View, Text, TouchableOpacity } from "react-native";
 import theme from "../theme";
+import LinkButton from "../ui/LinkButton";
 
 type CommentBottomBarProps = {
   comment: IndexerAPICommentSchemaType | IndexerAPICommentWithRepliesSchemaType;
@@ -30,16 +31,9 @@ export default function CommentBottomBar({
       }}
     >
       {hasReplies && (
-        <TouchableOpacity onPress={() => onViewReplies(comment)}>
-          <Text
-            style={{
-              color: theme.colors.text.link,
-              fontWeight: "bold",
-            }}
-          >
-            {replyCount > 1 ? "View Replies" : "View Reply"}
-          </Text>
-        </TouchableOpacity>
+        <LinkButton onPress={() => onViewReplies(comment)}>
+          {replyCount > 1 ? "View Replies" : "View Reply"}
+        </LinkButton>
       )}
 
       {onReply && (

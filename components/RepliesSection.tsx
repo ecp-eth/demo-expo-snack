@@ -52,7 +52,7 @@ export default function RepliesSection({
           borderStyle: "solid",
         }}
       >
-        <TouchableOpacity onPress={onClose} hitSlop={20}>
+        <TouchableOpacity onPress={onClose} hitSlop={50}>
           <View
             style={{
               display: "flex",
