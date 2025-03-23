@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Image } from "react-native";
 import { getCommentAuthorNameOrAddress } from "@ecp.eth/shared/helpers";
 import useEnrichedAuthor from "../hooks/useEnrichedAuthor";
@@ -12,6 +12,7 @@ type AuthorAvatarProps = {
 };
 
 export function AuthorAvatar({ author }: AuthorAvatarProps) {
+  const [isAvatarLoaded, setIsAvatarLoaded] = useState(false);
   const enrichedAuthor = useEnrichedAuthor(author);
   const nameOrAddress = getCommentAuthorNameOrAddress(enrichedAuthor);
   const fallbackAvatarUrl = identicon(author.address, AVATAR_SIZE);
@@ -41,11 +42,12 @@ export function AuthorAvatar({ author }: AuthorAvatarProps) {
           left: 0,
           right: 0,
           bottom: 0,
-          zIndex: 1,
+          zIndex: isAvatarLoaded ? 1 : 2,
         }}
         resizeMode="cover"
       />
       <Image
+        onLoad={() => setIsAvatarLoaded(true)}
         source={{ uri: avatarUrl }}
         style={{
           width: AVATAR_SIZE,
@@ -55,7 +57,7 @@ export function AuthorAvatar({ author }: AuthorAvatarProps) {
           left: 0,
           right: 0,
           bottom: 0,
-          zIndex: 2,
+          zIndex: isAvatarLoaded ? 2 : 1,
         }}
         resizeMode="cover"
         alt={nameOrAddress}
