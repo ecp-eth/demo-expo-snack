@@ -10,28 +10,8 @@ export function formatAuthorLink(author: AuthorType): string | null {
 }
 
 /**
- * Truncate text for reply preview
- *
- * @param text
- * @param maxLength
- * @returns
+ * Merge consecutive line breaks into a single line break
  */
-export function truncateText(
-  text: string,
-  maxLength: number,
-  maxLines: number
-): string {
-  const splitByNewline = text.split("\n");
-  let truncated = text;
-
-  if (splitByNewline.length > maxLines) {
-    truncated =
-      splitByNewline.slice(0, maxLines).filter(Boolean).join("\n") + "...";
-  }
-
-  if (truncated.length <= maxLength) {
-    return truncated;
-  }
-
-  return truncated.slice(0, maxLength).trim() + "...";
+export function mergeLineBreaks(text: string): string {
+  return text.split("\n").filter(Boolean).join("\n");
 }

@@ -1,4 +1,4 @@
-import { TouchableOpacity, Text } from "react-native";
+import { TouchableOpacity, Text, ViewStyle } from "react-native";
 import theme from "../theme";
 
 export default function LinkButton({

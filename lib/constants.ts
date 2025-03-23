@@ -1,2 +1,1 @@
-export const TRUNCATE_COMMENT_LENGTH = 150;
 export const TRUNCATE_COMMENT_LINES = 4;
