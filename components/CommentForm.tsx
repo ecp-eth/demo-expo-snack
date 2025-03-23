@@ -26,7 +26,7 @@ import { ScrollView } from "react-native-gesture-handler";
 const chainId = chain.id;
 const TOTAL_COMMENT_AREA_PERCENTAGE = 0.5;
 const HAS_REPLY_TEXT_TEXTAREA_PERCENTAGE = 0.2;
-const HAS_REPLY_TEXT_COMMENT_CONTENT_PERCENTAGE = 0.1;
+const HAS_REPLY_TEXT_COMMENT_CONTENT_PERCENTAGE = 0.06;
 
 type CommentFormProps = {
   justViewingReplies?: boolean;
