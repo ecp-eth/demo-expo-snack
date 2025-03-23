@@ -18,6 +18,8 @@ export default function CommentBottomBar({
   onViewReplies,
 }: CommentBottomBarProps) {
   const hasReplies = isIndexerAPICommentWithRepliesSchemaType(comment);
+  // FIXME: there is no field to tell us the total number of replies
+  const replyCount = hasReplies ? comment.replies.pagination.limit : 0;
   return (
     <View
       style={{
@@ -35,8 +37,7 @@ export default function CommentBottomBar({
               fontWeight: "bold",
             }}
           >
-            {comment.replies.results.length}{" "}
-            {comment.replies.results.length > 1 ? "Replies" : "Reply"}
+            {replyCount > 1 ? "View Replies" : "View Reply"}
           </Text>
         </TouchableOpacity>
       )}
