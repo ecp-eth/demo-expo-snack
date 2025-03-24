@@ -1,5 +1,5 @@
 import React from "react";
-import { Pressable, View, Text } from "react-native";
+import { TouchableOpacity, View, Text } from "react-native";
 import { useAccount } from "wagmi";
 import { useAppKit } from "@reown/appkit-wagmi-react-native";
 import { Hex, isHex } from "viem";
@@ -19,7 +19,7 @@ export default () => {
       }}
     >
       {address && isHex(address) ? <UserStatus address={address} /> : null}
-      <Pressable
+      <TouchableOpacity
         onPress={() => {
           open({ view: "Networks" });
         }}
@@ -27,7 +27,7 @@ export default () => {
       >
         <Text>Connected to</Text>
         <CurrentNetwork />
-      </Pressable>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -36,7 +36,7 @@ const UserStatus = ({ address }: { address: Hex }) => {
   const { open } = useAppKit();
 
   return (
-    <Pressable
+    <TouchableOpacity
       onPress={() =>
         open({
           view: "Account",
@@ -44,6 +44,6 @@ const UserStatus = ({ address }: { address: Hex }) => {
       }
     >
       <AuthorBox author={{ address }} />
-    </Pressable>
+    </TouchableOpacity>
   );
 };
