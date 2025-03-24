@@ -17,11 +17,16 @@ type CommentProps = {
   comment: IndexerAPICommentSchemaType | IndexerAPICommentWithRepliesSchemaType;
   onReply?: (comment: IndexerAPICommentSchemaType) => void;
   onViewReplies?: (comment: IndexerAPICommentSchemaType) => void;
+  onDelete: (comment: IndexerAPICommentSchemaType) => void;
 };
 
-export const Comment = ({ comment, onReply, onViewReplies }: CommentProps) => {
+export const Comment = ({
+  comment,
+  onReply,
+  onViewReplies,
+  onDelete,
+}: CommentProps) => {
   const author = useEnrichedAuthor(comment.author);
-  const isRootComment = !!onViewReplies;
 
   return (
     <View
@@ -48,13 +53,12 @@ export const Comment = ({ comment, onReply, onViewReplies }: CommentProps) => {
         <TimeBox timestamp={comment.timestamp} />
       </View>
       <CommentContent comment={comment} />
-      {isRootComment && (
-        <CommentBottomBar
-          comment={comment}
-          onReply={onReply}
-          onViewReplies={onViewReplies}
-        />
-      )}
+      <CommentBottomBar
+        comment={comment}
+        onReply={onReply}
+        onViewReplies={onViewReplies}
+        onDelete={onDelete}
+      />
     </View>
   );
 };

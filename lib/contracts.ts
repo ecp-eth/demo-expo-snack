@@ -4,7 +4,7 @@ import { Hex } from "viem";
 import { writeContract } from "@wagmi/core";
 import { config } from "../wagmi.config";
 
-type PostCommentViaContractParams = {
+type PostCommentViaCommentsV1Params = {
   commentData: CommentData;
   appSignature: Hex;
 };
@@ -12,11 +12,26 @@ type PostCommentViaContractParams = {
 export const postCommentAsAuthorViaCommentsV1 = async ({
   appSignature,
   commentData,
-}: PostCommentViaContractParams) => {
+}: PostCommentViaCommentsV1Params) => {
   return await writeContract(config, {
     abi: CommentsV1Abi,
     functionName: "postCommentAsAuthor",
     address: COMMENTS_V1_ADDRESS,
     args: [commentData, appSignature],
+  });
+};
+
+type DeleteCommentViaCommentsV1Params = {
+  commentId: Hex;
+};
+
+export const deleteCommentAsAuthorViaCommentsV1 = async ({
+  commentId,
+}: DeleteCommentViaCommentsV1Params) => {
+  return await writeContract(config, {
+    abi: CommentsV1Abi,
+    functionName: "deleteCommentAsAuthor",
+    address: COMMENTS_V1_ADDRESS,
+    args: [commentId],
   });
 };

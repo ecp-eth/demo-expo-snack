@@ -1,13 +1,10 @@
 import { QueryClient, type QueryKey } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
-import {
-  Hex,
-  IndexerAPIListCommentsSchema,
-  IndexerAPIListCommentsSchemaType,
-} from "@ecp.eth/sdk/schemas";
+import { Hex, IndexerAPIListCommentsSchemaType } from "@ecp.eth/sdk/schemas";
 import { useMonitorListCommentsCache } from "./useMonitorListCommentsCache";
 import { everyIndexerAPIListComments } from "./helpers";
 import {
+  FetchCommentInfinityQuerySchema,
   IndexerAPICommentWithPendingOperationSchemaType,
   PendingOperationSchema,
 } from "./schemas";
@@ -136,32 +133,39 @@ function deletePendingCommentOperationFromCache(
       return;
     }
 
-    const parsed = IndexerAPIListCommentsSchema.safeParse(oldData);
+    const parsed = FetchCommentInfinityQuerySchema.safeParse(oldData);
     if (!parsed.success) {
-      console.error("Failed to parse old data, this is likely a bug");
+      console.error(
+        "Failed to parse old data, this is likely a bug:",
+        parsed.error
+      );
       return;
     }
 
-    const cachedListIndexAPIListComments = parsed.data;
+    const cachedArrayOfIndexerAPIListComments = parsed.data.pages;
 
     deletingIds.forEach((deletingId) => {
-      everyIndexerAPIListComments(
-        cachedListIndexAPIListComments,
-        (indexerAPIComment) => {
-          if (indexerAPIComment.id === deletingId) {
-            indexerAPIComment.content = DELETED_COMMENT_CONTENT;
-            (indexerAPIComment.deletedAt as unknown as number) = Date.now();
-            (
-              indexerAPIComment as IndexerAPICommentWithPendingOperationSchemaType
-            ).pendingType = "delete";
-            return false;
-          }
+      cachedArrayOfIndexerAPIListComments.forEach(
+        (cachedArrayOfIndexerAPIListComment) => {
+          everyIndexerAPIListComments(
+            cachedArrayOfIndexerAPIListComment,
+            (indexerAPIComment) => {
+              if (indexerAPIComment.id === deletingId) {
+                indexerAPIComment.content = DELETED_COMMENT_CONTENT;
+                (indexerAPIComment.deletedAt as unknown as number) = Date.now();
+                (
+                  indexerAPIComment as IndexerAPICommentWithPendingOperationSchemaType
+                ).pendingType = "delete";
+                return false;
+              }
 
-          return true;
+              return true;
+            }
+          );
         }
       );
     });
 
-    return cachedListIndexAPIListComments;
+    return parsed.data;
   });
 }

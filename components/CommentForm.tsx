@@ -59,11 +59,9 @@ export default function CommentForm({
     error,
     reset,
   } = usePostComment();
-  const { insertPendingCommentOperation } = useOptimisticCommentingManager([
-    "comments",
-  ]);
-  const { insertPendingCommentOperation: insertPendingReplyOperation } =
-    useOptimisticCommentingManager(["replies", replyingComment?.id]);
+  const { insertPendingCommentOperation } = useOptimisticCommentingManager(
+    isReplying ? ["replies", replyingComment?.id] : ["comments"]
+  );
   const textIsEmpty = !text || text.trim().length === 0;
   const disabledSubmit = textIsEmpty || isPostingComment;
 
@@ -144,27 +142,15 @@ export default function CommentForm({
                 });
               setText("");
 
-              if (isReplying) {
-                insertPendingReplyOperation({
-                  chainId,
-                  txHash: txHash,
-                  response: {
-                    data: { ...commentData, id: commentId },
-                    signature: appSignature,
-                    hash: commentId,
-                  },
-                });
-              } else {
-                insertPendingCommentOperation({
-                  chainId,
-                  txHash: txHash,
-                  response: {
-                    data: { ...commentData, id: commentId },
-                    signature: appSignature,
-                    hash: commentId,
-                  },
-                });
-              }
+              insertPendingCommentOperation({
+                chainId,
+                txHash: txHash,
+                response: {
+                  data: { ...commentData, id: commentId },
+                  signature: appSignature,
+                  hash: commentId,
+                },
+              });
 
               if (isReplying && !justViewingReplies) {
                 onCancelReply();

@@ -6,7 +6,10 @@ import {
   SignCommentPayloadRequestSchemaType,
   SignCommentResponseClientSchema,
 } from "./generated/schemas";
-import { postCommentAsAuthorViaCommentsV1 } from "./contracts";
+import {
+  deleteCommentAsAuthorViaCommentsV1,
+  postCommentAsAuthorViaCommentsV1,
+} from "./contracts";
 import { chain, config } from "../wagmi.config";
 import { bigintReplacer } from "@ecp.eth/shared/helpers";
 
@@ -58,4 +61,10 @@ export const postComment = async (
     appSignature,
     commentId,
   };
+};
+
+export const deleteComment = async ({ commentId }: { commentId: Hex }) => {
+  await deleteCommentAsAuthorViaCommentsV1({
+    commentId,
+  });
 };

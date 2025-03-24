@@ -21,6 +21,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import RepliesSection from "./RepliesSection";
 import ApplyFadeToScrollable from "./ApplyFadeToScrollable";
 import { COMMENT_BOX_AVERAGE_HEIGHT } from "../lib/constants";
+import { useOptimisticCommentingManager } from "../hooks/useOptimisticCommentingManager";
+import useDeleteComment from "../hooks/useDeleteComment";
 
 type CommentSectionProps = {
   onReply: (comment: IndexerAPICommentSchemaType) => void;
@@ -35,6 +37,7 @@ export default function CommentSection({
   onCloseViewReplies,
   replyingComment,
 }: CommentSectionProps) {
+  const isReplying = !!replyingComment;
   const insets = useSafeAreaInsets();
   const { repliesSectionAnimatedStyle, handleCloseReplies, handleViewReplies } =
     useRepliesAnimation(onViewReplies, onCloseViewReplies, replyingComment);
@@ -76,6 +79,10 @@ export default function CommentSection({
       refetchOnWindowFocus: false,
       enabled: true,
     });
+  const { deletePendingCommentOperation } = useOptimisticCommentingManager(
+    isReplying ? ["replies", replyingComment?.id] : ["comments"]
+  );
+  const { mutateAsync: deleteComment } = useDeleteComment();
 
   if (isLoading) {
     return (
@@ -85,7 +92,12 @@ export default function CommentSection({
     );
   }
 
-  const allComments = data?.pages.flatMap((page) => page.results) ?? [];
+  const allComments =
+    data?.pages
+      .flatMap((page) => page.results)
+      .filter((comment) => {
+        return comment.deletedAt == null;
+      }) ?? [];
 
   if (allComments.length <= 0) {
     return (
@@ -106,6 +118,10 @@ export default function CommentSection({
               comment={item}
               onReply={onReply}
               onViewReplies={handleViewReplies}
+              onDelete={async (comment) => {
+                await deleteComment(comment.id);
+                deletePendingCommentOperation(comment.id);
+              }}
             />
           )}
           keyExtractor={(item) => item.id}
@@ -128,6 +144,10 @@ export default function CommentSection({
         parentComment={replyingComment}
         animatedStyle={repliesSectionAnimatedStyle}
         onClose={handleCloseReplies}
+        onDelete={async (comment) => {
+          await deleteComment(comment.id);
+          deletePendingCommentOperation(comment.id);
+        }}
       />
     </CommentSectionContainer>
   );

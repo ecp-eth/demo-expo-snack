@@ -23,6 +23,7 @@ import ApplyFadeToScrollable from "./ApplyFadeToScrollable";
 type RepliesSectionProps = {
   parentComment: IndexerAPICommentSchemaType;
   onClose: () => void;
+  onDelete: (comment: IndexerAPICommentSchemaType) => void;
   animatedStyle?: AnimatedStyle<ViewStyle>;
 };
 
@@ -30,6 +31,7 @@ export default function RepliesSectionParentCommentGuard({
   parentComment,
   animatedStyle,
   onClose,
+  onDelete,
   ...props
 }: Omit<RepliesSectionProps, "parentComment"> & {
   parentComment?: IndexerAPICommentSchemaType;
@@ -49,6 +51,7 @@ export default function RepliesSectionParentCommentGuard({
       parentComment={parentComment}
       animatedStyle={animatedStyle}
       onClose={onClose}
+      onDelete={onDelete}
       {...props}
     />
   );
@@ -58,6 +61,7 @@ function RepliesSection({
   parentComment,
   onClose,
   animatedStyle,
+  onDelete,
 }: RepliesSectionProps) {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
@@ -97,7 +101,12 @@ function RepliesSection({
       enabled: true,
     });
 
-  const replies = data?.pages.flatMap((page) => page.results) ?? [];
+  const replies =
+    data?.pages
+      .flatMap((page) => page.results)
+      .filter((comment) => {
+        return comment.deletedAt == null;
+      }) ?? [];
 
   if (isLoading) {
     return (
@@ -126,11 +135,7 @@ function RepliesSection({
           keyboardShouldPersistTaps="handled"
           data={replies}
           renderItem={({ item }) => (
-            <Comment
-              comment={item}
-              // onReply={onReply}
-              // onViewReplies={handleViewReplies}
-            />
+            <Comment comment={item} onDelete={onDelete} />
           )}
           keyExtractor={(item) => item.id}
           onEndReached={() => {
