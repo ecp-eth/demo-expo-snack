@@ -27,7 +27,8 @@ import ApplyFadeToScrollable from "./ApplyFadeToScrollable";
 const chainId = chain.id;
 const TOTAL_COMMENT_AREA_PERCENTAGE = 0.5;
 const HAS_REPLY_TEXT_TEXTAREA_PERCENTAGE = 0.2;
-const HAS_REPLY_TEXT_COMMENT_CONTENT_PERCENTAGE = 0.06;
+const HAS_REPLY_TEXT_COMMENT_CONTENT_PERCENTAGE = 0.1;
+const lineHeight = 14 * 1.2;
 
 type CommentFormProps = {
   justViewingReplies?: boolean;
@@ -187,11 +188,13 @@ function ReplyToComment({
         borderLeftWidth: 2,
         borderColor: theme.colors.reply,
         paddingStart: 10,
-        maxHeight: Math.min(
-          replyingCommentContentHeight,
-          Dimensions.get("window").height * 0.3
-        ),
-
+        maxHeight:
+          Math.ceil(
+            Math.min(
+              replyingCommentContentHeight,
+              Dimensions.get("window").height * 0.3
+            ) / lineHeight
+          ) * lineHeight,
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",

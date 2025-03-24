@@ -1,4 +1,9 @@
-import React, { PropsWithChildren, useCallback } from "react";
+import React, {
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import {
   View,
   NativeScrollEvent,
@@ -22,8 +27,21 @@ export default function ApplyFadeToScrollable({
   style,
   fadingPercentage = 0.95,
 }: ScrollableWithFadeProps) {
+  const [scrollViewHeight, setScrollViewHeight] = useState<number>();
+  const [contentHeight, setContentHeight] = useState<number>();
+
   const topFadeOpacity = useSharedValue(0);
-  const bottomFadeOpacity = useSharedValue(1);
+  const bottomFadeOpacity = useSharedValue(0);
+
+  useEffect(() => {
+    if (!scrollViewHeight || !contentHeight) {
+      return;
+    }
+
+    bottomFadeOpacity.value = withTiming(1, {
+      duration: 150,
+    });
+  }, [scrollViewHeight, contentHeight]);
 
   const animatedTopFadeStyle = useAnimatedStyle(() => ({
     opacity: topFadeOpacity.value,
@@ -37,9 +55,10 @@ export default function ApplyFadeToScrollable({
     const { contentOffset, contentSize, layoutMeasurement } = event;
 
     // Calculate scroll positions
-    const scrollTop = contentOffset.y;
-    const scrollBottom =
-      contentSize.height - layoutMeasurement.height - contentOffset.y;
+    const scrollTop = Math.floor(contentOffset.y);
+    const scrollBottom = Math.floor(
+      contentSize.height - layoutMeasurement.height - contentOffset.y
+    );
 
     // Update fade opacities with smooth animation
     topFadeOpacity.value = withTiming(scrollTop > 0 ? 1 : 0, {
@@ -68,7 +87,21 @@ export default function ApplyFadeToScrollable({
     >
       {!!childElement
         ? React.createElement<ScrollViewProps>(childElement.type, {
-            ...childElement.props,
+            ...(typeof childElement.props === "object"
+              ? childElement.props
+              : undefined),
+            onLayout: ({ nativeEvent }) => {
+              if (scrollViewHeight) {
+                return;
+              }
+              setScrollViewHeight(nativeEvent.layout.height);
+            },
+            onContentSizeChange: (_, height) => {
+              if (contentHeight) {
+                return;
+              }
+              setContentHeight(height);
+            },
             onScroll: ({ nativeEvent }) => handleScroll(nativeEvent),
             scrollEventThrottle: 16,
           })
@@ -77,6 +110,7 @@ export default function ApplyFadeToScrollable({
       <Animated.View
         style={[
           {
+            display: "flex",
             position: "absolute",
             top: 0,
             left: 0,
@@ -89,11 +123,7 @@ export default function ApplyFadeToScrollable({
           animatedTopFadeStyle,
         ]}
       >
-        <Svg
-          style={{
-            flex: 1,
-          }}
-        >
+        <Svg style={{ flex: 1 }}>
           <Defs>
             <LinearGradient id="topFade" x1="0" y1="0" x2="0" y2="1">
               <Stop offset="0" stopColor="#FFF" stopOpacity="1" />
@@ -109,19 +139,20 @@ export default function ApplyFadeToScrollable({
       <Animated.View
         style={[
           {
+            display: "flex",
             position: "absolute",
             bottom: 0,
             left: 0,
             right: 0,
-            zIndex: 1,
             top: `${fadingPercentage * 100}%`,
+            zIndex: 1,
             width: "100%",
             pointerEvents: "none",
           },
           animatedBottomFadeStyle,
         ]}
       >
-        <Svg>
+        <Svg style={{ flex: 1 }}>
           <Defs>
             <LinearGradient id="bottomFade" x1="0" y1="1" x2="0" y2="0">
               <Stop offset="0" stopColor="#FFF" stopOpacity="1" />
