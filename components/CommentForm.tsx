@@ -7,7 +7,6 @@ import {
   Dimensions,
 } from "react-native";
 import { useAccount, useSwitchChain } from "wagmi";
-import { ConnectButton } from "@reown/appkit-wagmi-react-native";
 import { IndexerAPICommentSchemaType } from "@ecp.eth/sdk/schemas";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import TextArea from "../ui/TextArea";
@@ -23,6 +22,7 @@ import useKeyboardRemainingheight from "../hooks/useKeyboardRemainingHeight";
 import theme from "../theme";
 import { ScrollView } from "react-native-gesture-handler";
 import ApplyFadeToScrollable from "./ApplyFadeToScrollable";
+import useWaitConnected from "../hooks/useWaitConnected";
 
 const chainId = chain.id;
 const TOTAL_COMMENT_AREA_PERCENTAGE = 0.5;
@@ -42,9 +42,10 @@ export default function CommentForm({
   onCancelReply,
 }: CommentFormProps) {
   const isReplying = !!replyingComment;
-  const { address } = useAccount();
+
+  const waitConnected = useWaitConnected();
   const textAreaRef = useRef<TextInput>(null);
-  const [textAreaDisabled, setTextAreaDisabled] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [text, setText] = useState("");
   const { switchChainAsync } = useSwitchChain();
   const keyboardRemainingHeight = useKeyboardRemainingheight(
@@ -63,7 +64,7 @@ export default function CommentForm({
     isReplying ? ["replies", replyingComment?.id] : ["comments"]
   );
   const textIsEmpty = !text || text.trim().length === 0;
-  const disabledSubmit = textIsEmpty || isPostingComment;
+  const disabledSubmit = textIsEmpty || isPostingComment || isProcessing;
 
   useShowErrorInToast(error);
 
@@ -73,7 +74,7 @@ export default function CommentForm({
         // user returned without error and is still posting (could bew still signing)
         // probably the wallet hangs we reset state to allow they to try again
         reset();
-        setTextAreaDisabled(false);
+        setIsProcessing(false);
       }
     }, [])
   );
@@ -100,7 +101,7 @@ export default function CommentForm({
       )}
 
       <TextArea
-        editable={!textAreaDisabled}
+        editable={!isProcessing}
         value={text}
         placeholder={
           !!replyingComment
@@ -114,58 +115,67 @@ export default function CommentForm({
         ref={textAreaRef}
       />
 
-      {address ? (
-        <Button
-          disabled={disabledSubmit}
-          loading={isPostingComment}
-          onPress={async () => {
-            if (textIsEmpty) {
-              return;
+      <Button
+        disabled={disabledSubmit}
+        loading={isPostingComment}
+        onPress={async () => {
+          if (textIsEmpty) {
+            return;
+          }
+
+          const isReplying = !!replyingComment;
+          setIsProcessing(true);
+
+          try {
+            console.log("connecting async...");
+
+            const address = await waitConnected();
+
+            console.log("switching chain...");
+
+            await switchChainAsync({
+              chainId,
+            });
+
+            console.log("switched, address:", address);
+
+            if (!address) {
+              throw new Error("Address not found");
             }
 
-            const isReplying = !!replyingComment;
-            setTextAreaDisabled(true);
+            console.log("start posting comment...");
 
-            try {
-              await switchChainAsync({
+            const { txHash, commentData, appSignature, commentId } =
+              await postComment({
+                content: text,
+                // in react native app we will have to specify a targetUri that is owned by us
+                targetUri: publicEnv.EXPO_PUBLIC_TARGET_URI,
+                author: address,
                 chainId,
+                parentId: replyingComment?.id,
               });
+            setText("");
 
-              const { txHash, commentData, appSignature, commentId } =
-                await postComment({
-                  content: text,
-                  // in react native app we will have to specify a targetUri that is owned by us
-                  targetUri: publicEnv.EXPO_PUBLIC_TARGET_URI,
-                  author: address,
-                  chainId,
-                  parentId: replyingComment?.id,
-                });
-              setText("");
+            insertPendingCommentOperation({
+              chainId,
+              txHash: txHash,
+              response: {
+                data: { ...commentData, id: commentId },
+                signature: appSignature,
+                hash: commentId,
+              },
+            });
 
-              insertPendingCommentOperation({
-                chainId,
-                txHash: txHash,
-                response: {
-                  data: { ...commentData, id: commentId },
-                  signature: appSignature,
-                  hash: commentId,
-                },
-              });
-
-              if (isReplying && !justViewingReplies) {
-                onCancelReply();
-              }
-            } finally {
-              setTextAreaDisabled(false);
+            if (isReplying && !justViewingReplies) {
+              onCancelReply();
             }
-          }}
-        >
-          {isReplying ? "Post reply" : "Post comment"}
-        </Button>
-      ) : null}
-      {!address ? (
-        <ConnectButton label="Connect" loadingLabel="Connecting..." />
-      ) : null}
+          } finally {
+            setIsProcessing(false);
+          }
+        }}
+      >
+        {isReplying ? "Post reply" : "Post comment"}
+      </Button>
     </View>
   );
 }
