@@ -224,11 +224,10 @@ function ReplyToComment({
           <Text>{comment.content}</Text>
         </ScrollView>
       </ApplyFadeToScrollable>
-      {!justViewingReplies && (
-        <TouchableOpacity onPress={onClose} style={{ marginStart: 10 }}>
-          <Ionicons name="close-circle" size={24} color={theme.colors.reply} />
-        </TouchableOpacity>
-      )}
+
+      <TouchableOpacity onPress={onClose} style={{ marginStart: 10 }}>
+        <Ionicons name="close-circle" size={24} color={theme.colors.reply} />
+      </TouchableOpacity>
     </View>
   );
 }

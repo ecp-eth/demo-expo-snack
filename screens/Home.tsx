@@ -4,7 +4,6 @@ import { IndexerAPICommentSchemaType } from "@ecp.eth/sdk/schemas";
 import CommentSection from "../components/CommentSection";
 import StatusBar from "../components/StatusBar";
 import CommentForm from "../components/CommentForm";
-import WhiteFadingGradient from "../ui/WhiteFadingGradient";
 
 export default function Home() {
   const [justViewingReplies, setJustViewingReplies] = useState(false);

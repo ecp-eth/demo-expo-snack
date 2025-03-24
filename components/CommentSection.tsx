@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { fetchComments } from "@ecp.eth/sdk";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import {
@@ -37,7 +37,7 @@ export default function CommentSection({
 }: CommentSectionProps) {
   const insets = useSafeAreaInsets();
   const { repliesSectionAnimatedStyle, handleCloseReplies, handleViewReplies } =
-    useRepliesAnimation(onViewReplies, onCloseViewReplies);
+    useRepliesAnimation(onViewReplies, onCloseViewReplies, replyingComment);
 
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
@@ -135,7 +135,8 @@ export default function CommentSection({
 
 const useRepliesAnimation = (
   onViewReplies: (comment: IndexerAPICommentSchemaType) => void,
-  onCloseViewReplies: () => void
+  onCloseViewReplies: () => void,
+  replyingComment: IndexerAPICommentSchemaType | undefined
 ) => {
   const repliesLeft = useSharedValue<`${number}%`>("100%");
   const repliesSectionAnimatedStyle = useAnimatedStyle(() => {
@@ -145,16 +146,23 @@ const useRepliesAnimation = (
   });
   const handleViewReplies = (comment: IndexerAPICommentSchemaType) => {
     onViewReplies(comment);
-    repliesLeft.value = withTiming("0%", {
-      duration: 200,
-    });
   };
   const handleCloseReplies = () => {
     onCloseViewReplies();
+  };
+
+  useEffect(() => {
+    if (replyingComment) {
+      repliesLeft.value = withTiming("0%", {
+        duration: 200,
+      });
+      return;
+    }
+
     repliesLeft.value = withTiming("100%", {
       duration: 200,
     });
-  };
+  }, [replyingComment]);
 
   return {
     repliesSectionAnimatedStyle,
