@@ -41,13 +41,14 @@ export default function CommentForm({
   replyingComment,
   onCancelReply,
 }: CommentFormProps) {
+  const isReplying = !!replyingComment;
   const { address } = useAccount();
   const textAreaRef = useRef<TextInput>(null);
   const [textAreaDisabled, setTextAreaDisabled] = useState(false);
   const [text, setText] = useState("");
   const { switchChainAsync } = useSwitchChain();
   const keyboardRemainingHeight = useKeyboardRemainingheight(
-    !!replyingComment
+    isReplying
       ? HAS_REPLY_TEXT_TEXTAREA_PERCENTAGE
       : TOTAL_COMMENT_AREA_PERCENTAGE
   );
@@ -61,6 +62,8 @@ export default function CommentForm({
   const { insertPendingCommentOperation } = useOptimisticCommentingManager([
     "comments",
   ]);
+  const { insertPendingCommentOperation: insertPendingReplyOperation } =
+    useOptimisticCommentingManager(["replies", replyingComment?.id]);
   const textIsEmpty = !text || text.trim().length === 0;
   const disabledSubmit = textIsEmpty || isPostingComment;
 
@@ -122,6 +125,7 @@ export default function CommentForm({
               return;
             }
 
+            const isReplying = !!replyingComment;
             setTextAreaDisabled(true);
 
             try {
@@ -140,17 +144,29 @@ export default function CommentForm({
                 });
               setText("");
 
-              insertPendingCommentOperation({
-                chainId,
-                txHash: txHash,
-                response: {
-                  data: { ...commentData, id: commentId },
-                  signature: appSignature,
-                  hash: commentId,
-                },
-              });
+              if (isReplying) {
+                insertPendingReplyOperation({
+                  chainId,
+                  txHash: txHash,
+                  response: {
+                    data: { ...commentData, id: commentId },
+                    signature: appSignature,
+                    hash: commentId,
+                  },
+                });
+              } else {
+                insertPendingCommentOperation({
+                  chainId,
+                  txHash: txHash,
+                  response: {
+                    data: { ...commentData, id: commentId },
+                    signature: appSignature,
+                    hash: commentId,
+                  },
+                });
+              }
 
-              if (!!replyingComment) {
+              if (isReplying && !justViewingReplies) {
                 onCancelReply();
               }
             } finally {
@@ -158,7 +174,7 @@ export default function CommentForm({
             }
           }}
         >
-          {!!replyingComment ? "Post reply" : "Post comment"}
+          {isReplying ? "Post reply" : "Post comment"}
         </Button>
       ) : null}
       {!address ? (

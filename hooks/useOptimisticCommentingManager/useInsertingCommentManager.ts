@@ -184,33 +184,31 @@ function insertPendingCommentOperationToCache(
 }
 
 function getParentStructureForInserting(
-  arrayOfIndexerAPICommentWithReplies: IndexerAPIListCommentRepliesSchemaType[],
+  arrayOfIndexerAPICommentReplies: IndexerAPIListCommentRepliesSchemaType[],
   parentId: Hex
 ): IndexerAPIListCommentRepliesSchemaType {
   let parentStructure: IndexerAPIListCommentRepliesSchemaType | undefined;
 
-  arrayOfIndexerAPICommentWithReplies.forEach(
-    (indexerAPICommentWithReplies) => {
-      everyIndexerAPIListComments(
-        indexerAPICommentWithReplies,
-        (indexerAPIComment) => {
-          if (indexerAPIComment.id === parentId) {
-            // narrow type, don't safeParse as it create a new object.
-            if (!isIndexerAPICommentWithRepliesSchema(indexerAPIComment)) {
-              // if we hit the depth limit, this will happen, lets quietly return
-              console.warn("optimistical update hits the depth limit");
-              return false;
-            }
-
-            parentStructure = indexerAPIComment.replies;
+  arrayOfIndexerAPICommentReplies.forEach((indexerAPICommentReplies) => {
+    everyIndexerAPIListComments(
+      indexerAPICommentReplies,
+      (indexerAPIComment) => {
+        if (indexerAPIComment.id === parentId) {
+          // narrow type, don't safeParse as it create a new object.
+          if (!isIndexerAPICommentWithRepliesSchema(indexerAPIComment)) {
+            // if we hit the depth limit, this will happen, lets quietly return
+            console.warn("optimistical update hits the depth limit");
             return false;
           }
-        }
-      );
-    }
-  );
 
-  return parentStructure ?? arrayOfIndexerAPICommentWithReplies[0];
+          parentStructure = indexerAPIComment.replies;
+          return false;
+        }
+      }
+    );
+  });
+
+  return parentStructure ?? arrayOfIndexerAPICommentReplies[0];
 }
 
 /**

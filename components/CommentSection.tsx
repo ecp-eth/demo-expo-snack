@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { fetchComments } from "@ecp.eth/sdk";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import {
@@ -20,6 +20,7 @@ import { Comment } from "./Comment";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import RepliesSection from "./RepliesSection";
 import ApplyFadeToScrollable from "./ApplyFadeToScrollable";
+import { COMMENT_BOX_AVERAGE_HEIGHT } from "../lib/constants";
 
 type CommentSectionProps = {
   onReply: (comment: IndexerAPICommentSchemaType) => void;
@@ -46,7 +47,9 @@ export default function CommentSection({
         // assuming comment box minimal height is 120, we want to at least fetch enough
         // to fill the screen
         // cursor: pageParam,
-        limit: Math.ceil(Dimensions.get("window").height / 120),
+        limit: Math.ceil(
+          Dimensions.get("window").height / COMMENT_BOX_AVERAGE_HEIGHT
+        ),
       },
       queryFn: ({ pageParam, signal }) => {
         return fetchComments({
@@ -84,7 +87,7 @@ export default function CommentSection({
 
   const allComments = data?.pages.flatMap((page) => page.results) ?? [];
 
-  if (!allComments.length) {
+  if (allComments.length <= 0) {
     return (
       <CommentSectionContainer>
         <Text>No comments yet</Text>
@@ -130,28 +133,6 @@ export default function CommentSection({
   );
 }
 
-const CommentSectionContainer = ({
-  children,
-  disablePaddingVertical = false,
-}: {
-  children: React.ReactNode;
-  disablePaddingVertical?: boolean;
-}) => {
-  return (
-    <View
-      style={{
-        flex: 1,
-        paddingTop: disablePaddingVertical ? 0 : 30,
-        paddingHorizontal: 30,
-      }}
-    >
-      <View style={{ flex: 1, position: "relative", overflow: "hidden" }}>
-        {children}
-      </View>
-    </View>
-  );
-};
-
 const useRepliesAnimation = (
   onViewReplies: (comment: IndexerAPICommentSchemaType) => void,
   onCloseViewReplies: () => void
@@ -180,4 +161,26 @@ const useRepliesAnimation = (
     handleViewReplies,
     handleCloseReplies,
   };
+};
+
+export const CommentSectionContainer = ({
+  children,
+  disablePaddingVertical = false,
+}: {
+  children: React.ReactNode;
+  disablePaddingVertical?: boolean;
+}) => {
+  return (
+    <View
+      style={{
+        flex: 1,
+        paddingTop: disablePaddingVertical ? 0 : 30,
+        paddingHorizontal: 30,
+      }}
+    >
+      <View style={{ flex: 1, position: "relative", overflow: "hidden" }}>
+        {children}
+      </View>
+    </View>
+  );
 };

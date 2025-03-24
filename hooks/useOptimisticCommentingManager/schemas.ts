@@ -2,6 +2,7 @@ import {
   HexSchema,
   IndexerAPICommentWithRepliesSchema,
   IndexerAPICursorPaginationSchema,
+  IndexerAPIListCommentRepliesSchema,
   IndexerAPIListCommentsSchema,
 } from "@ecp.eth/sdk/schemas";
 import { SignCommentResponseClientSchema } from "@ecp.eth/shared/schemas";
@@ -63,7 +64,9 @@ export type FetchCommentInfinityPageParamSchemaType = z.infer<
 
 export const FetchCommentInfinityQuerySchema = z.object({
   pageParams: z.array(FetchCommentInfinityPageParamSchema),
-  pages: z.array(IndexerAPIListCommentsSchema),
+  pages: z.array(
+    z.union([IndexerAPIListCommentsSchema, IndexerAPIListCommentRepliesSchema])
+  ),
 });
 
 export type FetchCommentInfinityQuerySchemaType = z.infer<
